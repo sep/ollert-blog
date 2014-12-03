@@ -1,0 +1,236 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Larry Price: Ollert: 6 Months Later - Ollert Diary</title>
+  <meta name="author" content="Larry Price">
+
+  
+  <meta name="description" content="Originally posted December 2, 2014, by Larry Price. Nine months ago I brought a team of 6 together to build a data analysis tool called Ollert. A few &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ollertapp.com/blog/2014/12/03/larry-price-ollert-6-months-later/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Ollert Diary" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,400italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Muli' rel='stylesheet' type='text/css'>
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <img src="/images/ollert-logo.png" />
+  <h1><a href="/">Ollert Diary</a></h1>
+</hgroup>
+
+</header>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Larry Price: Ollert: 6 Months Later</h1>
+    
+  </header>
+
+
+
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/larry-price/'>larry-price</a>, <a class='category' href='/blog/categories/talk/'>talk</a>
+  
+</span>
+
+
+<div class="entry-content"><p><em>Originally posted December 2, 2014, by <a href="http://www.larry-price.com/blog/2014/12/02/ollert-6-months-later/">Larry Price</a>.</em></p>
+
+<p><a href="http://www.larry-price.com/blog/2014/03/17/sep-startup-weekend-ollert">Nine months ago</a> I brought a team of 6 together to build a data analysis tool called <a href="https://ollertapp.com">Ollert</a>. <a href="http://www.larry-price.com/blog/2014/07/13/ollert-reveal-the-data-behind-your-trello-boards">A few months later</a>, I started working with <a href="//sep.com">SEP</a> to find time to make Ollert better. Where do we stand today?</p>
+
+<p>From a traffic perspective, we&rsquo;re doing pretty well. The numbers are increasing steadily over time, as are the number of people who use the application on a near-daily basis. Although we have surpassed our modest initial goals, we would like to build up a larger audience in the coming months.</p>
+
+<p>We&rsquo;ve had about 1800 different users visit the site for a total of over 5000 pageviews. On average, users hit about 2 pages per visit and stay with us for almost 90 seconds at a time. About half of all traffic comes from social media such as Twitter, LinkedIn, and Reddit, but we&rsquo;ve also seen some interesting traffic patterns come out of Trello, <a href="http://www.larry-price.com/">my blog</a>, <a href="//sep.com/labs">SEP Labs</a>, and various other blogs.</p>
+
+<p><a href="//trello.com">Trello</a> reached out to us a few months ago to congratulate us on making such a neat application using their API. They sent us some shirts and stickers for our trouble. It was an extremely satisfying moment.</p>
+
+<p>On the technical side of things, we&rsquo;ve made several changes to the application.</p>
+
+<p>We removed the concept of &ldquo;signing up&rdquo; for Ollert, as it was the greatest cause of confusion on the site. I replaced it with a mechanism that &ldquo;automatically&rdquo; signs a user up when they connect to a Trello account using OAuth. This makes our lives easier because we don&rsquo;t have to store passwords, and the lives of users easier because they don&rsquo;t have to come up with and remember another password.</p>
+
+<p>Every aspect of the site has been made faster. Server requests have been made faster by switching to unicorn and utilizing the &ldquo;workers&rdquo; feature. Trello API call times have been slashed - Board fetch time dropped from 1.8s to .18s, Label chart 17.6s down to .426s, WIP chart 18.2s to .221s, CFD 15s to 1s.</p>
+
+<p>We added two highly-requested charts - the Burn Down and Burn Up. It takes a certain type of Trello board to make these useful, and I&rsquo;m looking forward to finding someone one day who&rsquo;s able to make good use of them.</p>
+
+<p>We also improved the look of all pages (most notably the home page) with some help from SEP&rsquo;s UX team.</p>
+
+<p>Oh, and now it works significantly better on mobile.</p>
+
+<p>What does the future hold for Ollert?</p>
+
+<p>In the short term I&rsquo;m looking to implement a Cycle Time chart and add in a baseline for the Burndown chart. Long-term is a little less clear, but we may have a sizable announcement soon.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Larry Price</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-03T14:56:43-05:00" pubdate data-updated="true"></time>
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.ollertapp.com/blog/2014/12/03/larry-price-ollert-6-months-later/" data-via="OllertApp" data-counturl="http://blog.ollertapp.com/blog/2014/12/03/larry-price-ollert-6-months-later/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/12/03/larry-price-hotfixing-a-bug-in-trellos-client-dot-js/" title="Previous Post: Larry Price: Hotfixing a Bug in Trello's client.js">&laquo; Larry Price: Hotfixing a Bug in Trello&#8217;s client.js</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <form action="https://www.google.com/search" method="get">
+      <fieldset role="search">
+        <input type="hidden" name="q" value="site:blog.ollertapp.com" />
+        <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+      </fieldset>
+    </form>
+  
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-ollert-6-months-later/">Larry Price: Ollert: 6 Months Later</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-hotfixing-a-bug-in-trellos-client-dot-js/">Larry Price: Hotfixing a Bug in Trello&#8217;s client.js</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-testing-through-a-trello-connection-with-capybara-and-webkit/">Larry Price: Testing through a Trello Connection with Capybara and Webkit</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-ollert-reveal-the-data-behind-your-trello-boards/">Larry Price: Ollert: Reveal the Data Behind Your Trello Boards</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-testing-automated-emails-with-email-spec-in-cucumber/">Larry Price: Testing Automated Emails with email-spec in Cucumber</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-deauthorizing-token-with-the-trello-client/">Larry Price: Deauthorizing Token with the Trello Client</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-lessons-learned-during-the-conception-of-ollert/">Larry Price: Lessons Learned During the Conception of Ollert</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-using-sqlite-with-heroku/">Larry Price: Using Sqlite with Heroku</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-sticky-footer-with-twitter-bootstrap/">Larry Price: Sticky Footer with Twitter Bootstrap</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-using-the-trello-api-in-ruby/">Larry Price: Using the Trello API in Ruby</a>
+      </li>
+    
+  </ul>
+</section>
+
+  
+</aside>
+
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Larry Price -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+<script type="text/javascript">
+  if (window.location.href.indexOf('blog.ollertapp.com') === -1 && window.location.href.indexOf('localhost:') === -1) {
+    window.location.href = 'http://blog.ollertapp.com/blog/2014/12/03/larry-price-ollert-6-months-later/';
+  }
+</script>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+<script src="/javascripts/aharris.js"></script>
+
+</body>
+</html>

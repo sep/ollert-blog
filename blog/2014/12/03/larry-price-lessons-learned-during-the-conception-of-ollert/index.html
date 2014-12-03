@@ -1,0 +1,256 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Larry Price: Lessons Learned During the Conception of Ollert - Ollert Diary</title>
+  <meta name="author" content="Larry Price">
+
+  
+  <meta name="description" content="Originally posted June 12, 2014, by Larry Price. During SEP&rsquo;s previous startup weekend, I pitched an idea for a Trello Analysis Tool called &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ollertapp.com/blog/2014/12/03/larry-price-lessons-learned-during-the-conception-of-ollert/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Ollert Diary" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,400italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Muli' rel='stylesheet' type='text/css'>
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <img src="/images/ollert-logo.png" />
+  <h1><a href="/">Ollert Diary</a></h1>
+</hgroup>
+
+</header>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Larry Price: Lessons Learned During the Conception of Ollert</h1>
+    
+  </header>
+
+
+
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/larry-price/'>larry-price</a>, <a class='category' href='/blog/categories/talk/'>talk</a>
+  
+</span>
+
+
+<div class="entry-content"><p><em>Originally posted June 12, 2014, by <a href="http://www.larry-price.com/blog/2014/06/12/lessons-learned-during-the-conception-of-ollert/">Larry Price</a>.</em></p>
+
+<p>During <a href="http://sep.com">SEP&rsquo;s</a> previous <a href="http://sep.com/labs/">startup weekend</a>, I pitched an idea for a <a href="http://trello.com">Trello</a> Analysis Tool called <a href="https://ollertapp.com">Ollert</a>. In less than three days, a team of 6 built a minimal viable product (MVP) and put it live on the internet. In a little over three months, I have slowly guided Ollert through the legal department, obtained a real domain with security, and fixed a few bugs along the way. I&rsquo;ve learned a thing or two about seeing a hackathon project to fruition that I&rsquo;d like to get in writing.</p>
+
+<h3>1. You Can Never Be Too Prepared</h3>
+
+<p>Before Startup Weekend, I spent days refining my idea and coming up with a cute little proof of concept. I even laid out work items for my developers to work on. When I finally discovered a clever name, I thought my preparation was over.</p>
+
+<p>I was wrong.</p>
+
+<p>Although I requested 5 developers to help me build Ollert, my plans only allowed for two developers to work simultaneously. I didn&rsquo;t realize how hard it would be to keep everyone busy all the time, especially my less-experienced engineers.</p>
+
+<p>Although I did proof-of-concept my idea before we started, I failed to proof-of-concept the more dynamic capabilities a multi-user web application needs to provide. This mistake cost another developer and I the first night of the weekend, plus a bit of the next morning.</p>
+
+<p>Don&rsquo;t even get me started about environment setup. Although I run <a href="http://www.ubuntu.com">Ubuntu</a> natively and had all my developer tools ready before we started work Friday night, the rest of my team were users of That Other Operating System. I should have created a virtual machine with everything all set up, burned it to several USB drives, and let my developers set up VirtualBox without my intervention.</p>
+
+<h3>2. Talk to Legal</h3>
+
+<p>Why do I care about legal? Isn&rsquo;t this my responsibility anyway?</p>
+
+<p>As it turns out, putting a startup weekend project live on the internet before the weekend is over is really cool from a team perspective, but terrifying from a legal perspective. With our MVP, I wasn&rsquo;t using SSL to encrypt user data. I didn&rsquo;t consider how Fog Creek would react once they realized our name is their name backwards. I even had the chutzpah to stick my company&rsquo;s logo in my site&rsquo;s footer.</p>
+
+<p>A quick discussion with management will prepare both sides for the &ldquo;grand reveal&rdquo; if the project makes it to launch. Personally, I&rsquo;d like to see some level of legal counsel in the Startup Weekend &ldquo;pre-pitch&rdquo; session to get feedback before implementation.</p>
+
+<h3>3. Listen</h3>
+
+<p>The second day, one of my developers mentioned using endpoints in the application, and I rejected this idea on the basis that it was too complicated. On the dawn of the final day, we realized that we needed to use his approach or the application would be unusable. This required us to do a lot of rework that could have been avoided. I often think about what other ideas might have been suggested by my team that I may have accidentally ignored.</p>
+
+<h3>4. Easy Tasks</h3>
+
+<p>My assumption going into Startup Weekend was that my team would all be familiar enough with the technology to be able to &ldquo;jump right in&rdquo; or follow along with someone who could. This was a bad assumption.</p>
+
+<p>It&rsquo;s easy to find tasks that <em>I</em> can do. It&rsquo;s much more difficult to find tasks that <em>anyone</em> could do. What are the less-involved tasks on your current project that a less-experienced developer could work on until they&rsquo;re ready to tackle something bigger? Can they set up the database, or the tests? Can you find a guide for them to follow to do these things? If not, you&rsquo;ll have people on your team who don&rsquo;t feel involved but desperately want to help.</p>
+
+<h3>5. Start Small</h3>
+
+<p>Ollert is a pretty big idea, especially for a three-day project. I had high hopes of making it even bigger until the dawn of the final day. I wanted to include some sort of payment system to prove that we would be able to charge people when they sign up without actually charging them. This &ldquo;feature&rdquo; of fake payment has no place in a real product, and would have been misleading at best. We had dozens of ideas for statistics and charts to make it into the website that just weren&rsquo;t that useful.</p>
+
+<p>Limiting scope might have allowed us to come up with a more polished MVP; I walked away the final evening wishing I had left out sign up/in in favor of giving the application more sex appeal.</p>
+
+<h3>Conclusion</h3>
+
+<p>Starting a project is hard. It&rsquo;s even more difficult when you have to delegate most of the work to other people. Startup Weekend is a manger and a mortuary, seeing the birth of many ideas and the death of most. I hope to take this experience and make an even better new product next Startup Weekend.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Larry Price</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-03T14:54:48-05:00" pubdate data-updated="true"></time>
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.ollertapp.com/blog/2014/12/03/larry-price-lessons-learned-during-the-conception-of-ollert/" data-via="OllertApp" data-counturl="http://blog.ollertapp.com/blog/2014/12/03/larry-price-lessons-learned-during-the-conception-of-ollert/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/12/03/larry-price-using-sqlite-with-heroku/" title="Previous Post: Larry Price: Using Sqlite with Heroku">&laquo; Larry Price: Using Sqlite with Heroku</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/12/03/larry-price-deauthorizing-token-with-the-trello-client/" title="Next Post: Larry Price: Deauthorizing Token with the Trello Client">Larry Price: Deauthorizing Token with the Trello Client &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <form action="https://www.google.com/search" method="get">
+      <fieldset role="search">
+        <input type="hidden" name="q" value="site:blog.ollertapp.com" />
+        <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+      </fieldset>
+    </form>
+  
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-ollert-6-months-later/">Larry Price: Ollert: 6 Months Later</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-hotfixing-a-bug-in-trellos-client-dot-js/">Larry Price: Hotfixing a Bug in Trello&#8217;s client.js</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-testing-through-a-trello-connection-with-capybara-and-webkit/">Larry Price: Testing through a Trello Connection with Capybara and Webkit</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-ollert-reveal-the-data-behind-your-trello-boards/">Larry Price: Ollert: Reveal the Data Behind Your Trello Boards</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-testing-automated-emails-with-email-spec-in-cucumber/">Larry Price: Testing Automated Emails with email-spec in Cucumber</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-deauthorizing-token-with-the-trello-client/">Larry Price: Deauthorizing Token with the Trello Client</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-lessons-learned-during-the-conception-of-ollert/">Larry Price: Lessons Learned During the Conception of Ollert</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-using-sqlite-with-heroku/">Larry Price: Using Sqlite with Heroku</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-sticky-footer-with-twitter-bootstrap/">Larry Price: Sticky Footer with Twitter Bootstrap</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-using-the-trello-api-in-ruby/">Larry Price: Using the Trello API in Ruby</a>
+      </li>
+    
+  </ul>
+</section>
+
+  
+</aside>
+
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Larry Price -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+<script type="text/javascript">
+  if (window.location.href.indexOf('blog.ollertapp.com') === -1 && window.location.href.indexOf('localhost:') === -1) {
+    window.location.href = 'http://blog.ollertapp.com/blog/2014/12/03/larry-price-lessons-learned-during-the-conception-of-ollert/';
+  }
+</script>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+<script src="/javascripts/aharris.js"></script>
+
+</body>
+</html>

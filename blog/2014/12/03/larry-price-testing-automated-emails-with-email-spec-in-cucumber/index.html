@@ -1,0 +1,388 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Larry Price: Testing Automated Emails with email-spec in Cucumber - Ollert Diary</title>
+  <meta name="author" content="Larry Price">
+
+  
+  <meta name="description" content="Originally posted July 12, 2014, by Larry Price. Now that I send emails using Pony, I want to be able to verify that the emails are being generated &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ollertapp.com/blog/2014/12/03/larry-price-testing-automated-emails-with-email-spec-in-cucumber/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Ollert Diary" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,400italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Muli' rel='stylesheet' type='text/css'>
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <img src="/images/ollert-logo.png" />
+  <h1><a href="/">Ollert Diary</a></h1>
+</hgroup>
+
+</header>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Larry Price: Testing Automated Emails With Email-spec in Cucumber</h1>
+    
+  </header>
+
+
+
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/larry-price/'>larry-price</a>, <a class='category' href='/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+<div class="entry-content"><p><em>Originally posted July 12, 2014, by <a href="http://www.larry-price.com/blog/2014/07/12/testing-automated-emails-with-email-spec-in-cucumber/">Larry Price</a>.</em></p>
+
+<p>Now that <a href="http://www.larry-price.com/blog/2014/07/07/deauthorizing-token-with-the-trello-client/">I send emails using Pony</a>, I want to be able to verify that the emails are being generated correctly. I also don&rsquo;t want to send real emails and have my tests check an inbox somewhere. I found a couple of solutions to do this, including <a href="https://github.com/johnmendonca/pony-test">pony-test</a> and <a href="https://github.com/bmabey/email-spec">email-spec</a>. Although pony-test fits my needs perfectly, the last commit was December 27, 2011 (2.5 years ago at the time of this post), and thus was using an outdated version of <a href="https://github.com/jnicklas/capybara">capybara</a> which I was unwilling to use. Fortunately, pony-spec is mostly just a fork of email-spec with all the non-Pony components ripped out.</p>
+
+<p>I&rsquo;m going to be using Cucumber to test my emails, but email-spec also boasts compatibility with rspec and Turnip. To get started:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>gem install email-spec
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The developers of email-spec were kind enough to give us some free step definitions. If I was using rails, I could just type <code>rails generate email_spec:steps</code>, but since I&rsquo;m using Sinatra I opted just to copy-paste the file into my <code>step_definitions/</code> directory. You can find <code>email_steps.rb</code> <a href="https://raw.githubusercontent.com/bmabey/email-spec/master/lib/generators/email_spec/steps/templates/email_steps.rb">on Github</a>.</p>
+
+<p>In <a href="http://www.larry-price.com/blog/2014/07/07/deauthorizing-token-with-the-trello-client/">my last post about small horses and emails</a>, I used the following code to send a confirmation email on signup:</p>
+
+<figure class='code'><figcaption><span>web.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># ...</span>
+</span><span class='line'><span class="n">post</span> <span class="s1">&#39;/signup&#39;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">create!</span> <span class="n">params</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">request</span><span class="o">.</span><span class="n">base_url</span><span class="si">}</span><span class="s2">/account/reset/</span><span class="si">#{</span><span class="n">user</span><span class="o">.</span><span class="n">generate_verification_hash</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="no">Pony</span><span class="o">.</span><span class="n">mail</span><span class="p">(</span>
+</span><span class='line'>    <span class="ss">to</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">email</span><span class="p">,</span>
+</span><span class='line'>    <span class="ss">from</span><span class="p">:</span> <span class="s2">&quot;MyApp Help Desk &lt;noreply@myapp.com&gt;&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="ss">subject</span><span class="p">:</span> <span class="s2">&quot;MyApp Account Verification&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="ss">body</span><span class="p">:</span> <span class="s2">&quot;A request has been made to verify your MyApp account (https://myapp.com).&quot;</span> <span class="o">+</span>
+</span><span class='line'>          <span class="s2">&quot;If you made this request, go to &quot;</span> <span class="o">+</span> <span class="n">url</span> <span class="o">+</span> <span class="s2">&quot;. If you did not make this request, ignore this email.&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="ss">html_body</span><span class="p">:</span> <span class="n">haml</span><span class="p">(</span>
+</span><span class='line'>      <span class="ss">:verify_account_email</span><span class="p">,</span>
+</span><span class='line'>      <span class="ss">layout</span><span class="p">:</span> <span class="kp">false</span><span class="p">,</span>
+</span><span class='line'>      <span class="ss">locals</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="ss">email</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">email</span><span class="p">,</span>
+</span><span class='line'>        <span class="ss">date</span><span class="p">:</span> <span class="no">DateTime</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M:%S%P %B %d, %Y&quot;</span><span class="p">),</span>
+</span><span class='line'>        <span class="ss">ip</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">ip</span><span class="p">,</span>
+</span><span class='line'>        <span class="ss">url</span><span class="p">:</span> <span class="n">url</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>    <span class="p">)</span>
+</span><span class='line'>  <span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="c1"># ...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>/views/verify_account_email.haml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='haml'><span class='line'><span class="nt">%p</span>
+</span><span class='line'>  Hello!
+</span><span class='line'><span class="nt">%p</span>
+</span><span class='line'>  An account verification has been requested for your new &lt;a href=&quot;https://myapp.com&quot;&gt;MyApp&lt;/a&gt; account.
+</span><span class='line'>
+</span><span class='line'><span class="nt">%ul</span>
+</span><span class='line'>  <span class="nt">%li</span>
+</span><span class='line'>    Username: <span class="si">#{</span><span class="n">locals</span><span class="o">[</span><span class="ss">:email</span><span class="o">]</span><span class="si">}</span>
+</span><span class='line'>  <span class="nt">%li</span>
+</span><span class='line'>    Time: <span class="si">#{</span><span class="n">locals</span><span class="o">[</span><span class="ss">:date</span><span class="o">]</span><span class="si">}</span>
+</span><span class='line'>  <span class="nt">%li</span>
+</span><span class='line'>    IP address: <span class="si">#{</span><span class="n">locals</span><span class="o">[</span><span class="ss">:ip</span><span class="o">]</span><span class="si">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">%p</span>
+</span><span class='line'>  If you made this request, click the link below or copy-paste the following URL into your browser to verify your account:
+</span><span class='line'>
+</span><span class='line'><span class="nt">%p</span>
+</span><span class='line'>  <span class="nt">%a</span><span class="p">{</span><span class="ss">href</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">locals</span><span class="o">[</span><span class="ss">:url</span><span class="o">]</span><span class="si">}</span>&quot;, alt: &quot;Verify&quot;, title: &quot;Click to verify account&quot;}
+</span><span class='line'>    <span class="si">#{</span><span class="n">locals</span><span class="o">[</span><span class="ss">:url</span><span class="o">]</span><span class="si">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">%p</span>
+</span><span class='line'>  If you did not request this new account, please ignore this email.
+</span><span class='line'>
+</span><span class='line'><span class="nt">%p</span>
+</span><span class='line'>  Sincerely,
+</span><span class='line'>  <span class="nt">%br</span>
+</span><span class='line'>  Team MyApp
+</span><span class='line'>
+</span><span class='line'><span class="nt">%p</span>
+</span><span class='line'>  This email account is not monitored and will not receive replies. For more information, contact &lt;a href=&quot;mailto:connect@myapp.com&quot;&gt;connect@myapp.com&lt;/a&gt;.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Given the pre-defined steps from email-spec, testing that this email gets sent is a breeze. Adding a scenario to my feature file:</p>
+
+<figure class='code'><figcaption><span>features/SignupConfirmation.feature</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='cucumber'><span class='line'><span class="k">Feature:</span><span class="nf"> Signup Confirmation</span>
+</span><span class='line'><span class="nf">  As a new user</span>
+</span><span class='line'><span class="nf">  When I sign up</span>
+</span><span class='line'><span class="nf">  I should receive a confirmation email</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">Background:</span><span class="nf"></span>
+</span><span class='line'><span class="k">  Given </span><span class="nf">a clear email queue</span>
+</span><span class='line'><span class="nf">  </span><span class="k">When </span><span class="nf">I go to the signup page</span>
+</span><span class='line'><span class="nf">  </span><span class="k">And </span><span class="nf">I fill in &quot;</span><span class="s">email</span><span class="nf">&quot; with &quot;</span><span class="s">prez@whitehouse.gov</span><span class="nf">&quot;</span>
+</span><span class='line'><span class="nf">  </span><span class="k">And </span><span class="nf">I fill in &quot;</span><span class="s">password</span><span class="nf">&quot; with &quot;</span><span class="s">bunnies</span><span class="nf">&quot;</span>
+</span><span class='line'><span class="nf">  </span><span class="k">And </span><span class="nf">I press &quot;</span><span class="s">Sign Up</span><span class="nf">&quot;</span>
+</span><span class='line'><span class="nf">  </span><span class="k">Then </span><span class="nf">&quot;</span><span class="s">prez@whitehouse.gov</span><span class="nf">&quot; should receive an email</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">Scenario:</span><span class="nf"> Receives email with correct contents</span>
+</span><span class='line'><span class="k">  When </span><span class="nf">&quot;</span><span class="s">prez@whitehouse.gov</span><span class="nf">&quot; opens the email</span>
+</span><span class='line'><span class="nf">  </span><span class="k">Then </span><span class="nf">they should see the email delivered from &quot;</span><span class="s">MyApp Help Desk </span><span class="nv">&lt;noreply@myapp.com&gt;</span><span class="nf">&quot;</span>
+</span><span class='line'><span class="nf">  </span><span class="k">And </span><span class="nf">they should see &quot;</span><span class="s">MyApp Account Verification</span><span class="nf">&quot; in the email subject</span>
+</span><span class='line'><span class="nf">  </span><span class="k">And </span><span class="nf">they should see &quot;</span><span class="s">Username: prez@whitehouse.gov</span><span class="nf">&quot; in the email body</span>
+</span><span class='line'><span class="nf">  </span><span class="k">And </span><span class="nf">they should see &quot;</span><span class="s">An account verification has been requested</span><span class="nf">&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&rsquo;s it. Now we know that an email like the one above will be sent during signup. What we can&rsquo;t test here is that our SMTP server (or equivalent) is working, so in reality I&rsquo;m only testing that the email will attempt to send that looks like the one I test against.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Larry Price</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-03T14:55:30-05:00" pubdate data-updated="true"></time>
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.ollertapp.com/blog/2014/12/03/larry-price-testing-automated-emails-with-email-spec-in-cucumber/" data-via="OllertApp" data-counturl="http://blog.ollertapp.com/blog/2014/12/03/larry-price-testing-automated-emails-with-email-spec-in-cucumber/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/12/03/larry-price-deauthorizing-token-with-the-trello-client/" title="Previous Post: Larry Price: Deauthorizing Token with the Trello Client">&laquo; Larry Price: Deauthorizing Token with the Trello Client</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/12/03/larry-price-ollert-reveal-the-data-behind-your-trello-boards/" title="Next Post: Larry Price: Ollert: Reveal the Data Behind Your Trello Boards">Larry Price: Ollert: Reveal the Data Behind Your Trello Boards &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <form action="https://www.google.com/search" method="get">
+      <fieldset role="search">
+        <input type="hidden" name="q" value="site:blog.ollertapp.com" />
+        <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+      </fieldset>
+    </form>
+  
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-ollert-6-months-later/">Larry Price: Ollert: 6 Months Later</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-hotfixing-a-bug-in-trellos-client-dot-js/">Larry Price: Hotfixing a Bug in Trello&#8217;s client.js</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-testing-through-a-trello-connection-with-capybara-and-webkit/">Larry Price: Testing through a Trello Connection with Capybara and Webkit</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-ollert-reveal-the-data-behind-your-trello-boards/">Larry Price: Ollert: Reveal the Data Behind Your Trello Boards</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-testing-automated-emails-with-email-spec-in-cucumber/">Larry Price: Testing Automated Emails with email-spec in Cucumber</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-deauthorizing-token-with-the-trello-client/">Larry Price: Deauthorizing Token with the Trello Client</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-lessons-learned-during-the-conception-of-ollert/">Larry Price: Lessons Learned During the Conception of Ollert</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-using-sqlite-with-heroku/">Larry Price: Using Sqlite with Heroku</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-sticky-footer-with-twitter-bootstrap/">Larry Price: Sticky Footer with Twitter Bootstrap</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-using-the-trello-api-in-ruby/">Larry Price: Using the Trello API in Ruby</a>
+      </li>
+    
+  </ul>
+</section>
+
+  
+</aside>
+
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Larry Price -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+<script type="text/javascript">
+  if (window.location.href.indexOf('blog.ollertapp.com') === -1 && window.location.href.indexOf('localhost:') === -1) {
+    window.location.href = 'http://blog.ollertapp.com/blog/2014/12/03/larry-price-testing-automated-emails-with-email-spec-in-cucumber/';
+  }
+</script>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+<script src="/javascripts/aharris.js"></script>
+
+</body>
+</html>

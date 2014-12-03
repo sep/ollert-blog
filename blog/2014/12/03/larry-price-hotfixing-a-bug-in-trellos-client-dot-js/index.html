@@ -1,0 +1,281 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Larry Price: Hotfixing a Bug in Trello&#8217;s client.js - Ollert Diary</title>
+  <meta name="author" content="Larry Price">
+
+  
+  <meta name="description" content="Originally posted August 22, 2014, by Larry Price. I&rsquo;m a huge fan of Trello, and I recently created an app to analyze Trello data called Ollert &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ollertapp.com/blog/2014/12/03/larry-price-hotfixing-a-bug-in-trellos-client-dot-js/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Ollert Diary" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,400italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Muli' rel='stylesheet' type='text/css'>
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <img src="/images/ollert-logo.png" />
+  <h1><a href="/">Ollert Diary</a></h1>
+</hgroup>
+
+</header>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Larry Price: Hotfixing a Bug in Trello&#8217;s client.js</h1>
+    
+  </header>
+
+
+
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/larry-price/'>larry-price</a>, <a class='category' href='/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+<div class="entry-content"><p><em>Originally posted August 22, 2014, by <a href="http://www.larry-price.com/blog/2014/08/22/fixing-some-minor-bugs-in-trellos-client-dot-js/">Larry Price</a>.</em></p>
+
+<p>I&rsquo;m a huge fan of <a href="https://trello.com">Trello</a>, and I recently created an app to analyze Trello data called <a href="https://ollertapp.com">Ollert</a>. Ollert makes heavy use of the <a href="http://trello.com/docs">Trello API</a>. I&rsquo;ve written previously about <a href="http://www.larry-price.com/blog/2014/03/18/connecting-to-the-trello-api/">using Trello&rsquo;s client.js to connect to the Trello API</a>.</p>
+
+<p>During some ad-hoc testing of opening/closing the Trello authorization popup, I found that clicking &ldquo;Deny&rdquo; on the popup, reopening it, and then clicking &ldquo;Connect&rdquo; resulted in me not being able to connect. I spent some time looking into workarounds and I even contacted Trello support. After studying <a href="https://trello.com/1/client.coffee">client.coffee</a>, I eventually found the problem: the Trello client keeps around an anonymous object called <code>ready</code> that stores some session data. When a user clicks &lsquo;Deny&rsquo;, this <code>ready</code> object remembers. I was able to fix the Deny/Allow issue by pulling down a local copy of client.js and making an interface change to the module:</p>
+
+<figure class='code'><figcaption><span>client.js</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">clearReady</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">ready</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>From <a href="http://www.larry-price.com/blog/2014/07/07/deauthorizing-token-with-the-trello-client/">another issue I was having</a>, I already call <code>Trello.deauthorize()</code> before my application attempts to contact Trello, so now I also make a call to <code>Trello.clearReady()</code>. My <code>authorize()</code> function looks like this:</p>
+
+<figure class='code'><figcaption><span>trello-controller.js</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">authorize</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">expires</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">Trello</span><span class="p">.</span><span class="nx">deauthorize</span><span class="p">();</span>
+</span><span class='line'>  <span class="nx">Trello</span><span class="p">.</span><span class="nx">clearReady</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">Trello</span><span class="p">.</span><span class="nx">authorize</span><span class="p">({</span>
+</span><span class='line'>    <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;Ollert&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">type</span><span class="o">:</span> <span class="s2">&quot;popup&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">interactive</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">expiration</span><span class="o">:</span> <span class="nx">expires</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">persist</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">success</span><span class="o">:</span> <span class="nx">callback</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">scope</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">read</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">write</span><span class="o">:</span> <span class="kc">true</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Since I&rsquo;ve pulled client.js locally, I&rsquo;m no longer sending my developer token when I load the file. I manually set my key when the page loads, but this could just as easily be done in my <code>authorize</code> method above.</p>
+
+<figure class='code'><figcaption><span>layout.haml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="o">:</span><span class="nx">javascript</span>
+</span><span class='line'>  <span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">Trello</span><span class="p">.</span><span class="nx">setKey</span><span class="p">(</span><span class="s2">&quot;#{ENV[&#39;PUBLIC_KEY&#39;]}&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can find a copy of my modified client.js <a href="https://gist.github.com/larryprice/1e67ddcd53c686fbc1de">in this Gist</a>.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Larry Price</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-03T14:56:33-05:00" pubdate data-updated="true"></time>
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.ollertapp.com/blog/2014/12/03/larry-price-hotfixing-a-bug-in-trellos-client-dot-js/" data-via="OllertApp" data-counturl="http://blog.ollertapp.com/blog/2014/12/03/larry-price-hotfixing-a-bug-in-trellos-client-dot-js/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/12/03/larry-price-testing-through-a-trello-connection-with-capybara-and-webkit/" title="Previous Post: Larry Price: Testing through a Trello Connection with Capybara and Webkit">&laquo; Larry Price: Testing through a Trello Connection with Capybara and Webkit</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/12/03/larry-price-ollert-6-months-later/" title="Next Post: Larry Price: Ollert: 6 Months Later">Larry Price: Ollert: 6 Months Later &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <form action="https://www.google.com/search" method="get">
+      <fieldset role="search">
+        <input type="hidden" name="q" value="site:blog.ollertapp.com" />
+        <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+      </fieldset>
+    </form>
+  
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-ollert-6-months-later/">Larry Price: Ollert: 6 Months Later</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-hotfixing-a-bug-in-trellos-client-dot-js/">Larry Price: Hotfixing a Bug in Trello&#8217;s client.js</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-testing-through-a-trello-connection-with-capybara-and-webkit/">Larry Price: Testing through a Trello Connection with Capybara and Webkit</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-ollert-reveal-the-data-behind-your-trello-boards/">Larry Price: Ollert: Reveal the Data Behind Your Trello Boards</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-testing-automated-emails-with-email-spec-in-cucumber/">Larry Price: Testing Automated Emails with email-spec in Cucumber</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-deauthorizing-token-with-the-trello-client/">Larry Price: Deauthorizing Token with the Trello Client</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-lessons-learned-during-the-conception-of-ollert/">Larry Price: Lessons Learned During the Conception of Ollert</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-using-sqlite-with-heroku/">Larry Price: Using Sqlite with Heroku</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-sticky-footer-with-twitter-bootstrap/">Larry Price: Sticky Footer with Twitter Bootstrap</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-using-the-trello-api-in-ruby/">Larry Price: Using the Trello API in Ruby</a>
+      </li>
+    
+  </ul>
+</section>
+
+  
+</aside>
+
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Larry Price -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+<script type="text/javascript">
+  if (window.location.href.indexOf('blog.ollertapp.com') === -1 && window.location.href.indexOf('localhost:') === -1) {
+    window.location.href = 'http://blog.ollertapp.com/blog/2014/12/03/larry-price-hotfixing-a-bug-in-trellos-client-dot-js/';
+  }
+</script>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+<script src="/javascripts/aharris.js"></script>
+
+</body>
+</html>

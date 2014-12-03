@@ -1,0 +1,275 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Larry Price: Connecting to the Trello API - Ollert Diary</title>
+  <meta name="author" content="Larry Price">
+
+  
+  <meta name="description" content="Originally posted March 18, 2014, by Larry Price. Trello has a pretty sweet API, which we use extensively in our Trello-analysis app Ollert. &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ollertapp.com/blog/2014/12/03/larry-price-connecting-to-the-trello-api/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Ollert Diary" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,400italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Muli' rel='stylesheet' type='text/css'>
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <img src="/images/ollert-logo.png" />
+  <h1><a href="/">Ollert Diary</a></h1>
+</hgroup>
+
+</header>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Larry Price: Connecting to the Trello API</h1>
+    
+  </header>
+
+
+
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/larry-price/'>larry-price</a>, <a class='category' href='/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+<div class="entry-content"><p><em>Originally posted March 18, 2014, by <a href="http://www.larry-price.com/blog/2014/03/18/connecting-to-the-trello-api/">Larry Price</a>.</em></p>
+
+<p><a href="//trello.com">Trello</a> has a <a href="//trello.com/docs/">pretty sweet API</a>, which we use extensively in our Trello-analysis app <a href="//ollert.herokuapp.com">Ollert</a>. Initially connecting to the Trello API took us a few hours, so I&rsquo;d like to make a record of how we managed to connect.</p>
+
+<p>Making a connection to Trello requires two hashcodes: an application key and a Trello member token. You can generate and view your application key by visiting <a href="//trello.com/1/appKey/generate">https://trello.com/1/appKey/generate</a>.</p>
+
+<p>The member token is something we need to get from the user. There are two ways to get a user&rsquo;s member token: through fragments and through a <strong>postMessage</strong>. You can also request different levels of access (read, write, read+write), and different expiration periods (such as 1 day, 30 days, or never) for member tokens. For the remainder of this writing, I&rsquo;ll be accessing a read-only member token that never expires.</p>
+
+<p>We didn&rsquo;t have a lot of luck with fragments, but the concept is simple enough. You have the user click a link that probably says &ldquo;Connect With Trello&rdquo; which is similar to:</p>
+
+<p><code>https://trello.com/1/authorize?key=applicationkey&amp;name=applicationname&amp;expiration=never&amp;response_type=token</code></p>
+
+<p>At this point, the user is redirected to Trello and given the opportunity to Allow or Deny your application access. Once allowed, the user sees a static Trello page with their member token in plain text. Somehow you&#8221;re supposed to convey to them that they should copy this token and paste it back to you. This has clear drawbacks in usability.</p>
+
+<p>Using the <strong>postMessage</strong> method of accessing a member token was significantly more fruitful. Trello provides a Javascript file named <a href="https://trello.com/docs/gettingstarted/clientjs.html">client.js</a> that does most of the legwork for you. An example:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='haml'><span class='line'><span class="nt">%script</span><span class="p">{</span><span class="ss">src</span><span class="p">:</span> <span class="s2">&quot;//api.trello.com/1/client.js?key=applicationkey&quot;</span><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>function AuthenticateTrello() {
+</span><span class='line'>  Trello.authorize({
+</span><span class='line'>    name: &quot;YourApplication&quot;,
+</span><span class='line'>    type: &quot;popup&quot;,
+</span><span class='line'>    interactive: true,
+</span><span class='line'>    expiration: &quot;never&quot;,
+</span><span class='line'>    persist: true,
+</span><span class='line'>    success: function () { onAuthorizeSuccessful(); },
+</span><span class='line'>    scope: { write: false, read: true },
+</span><span class='line'>  });
+</span><span class='line'>}
+</span><span class='line'>function onAuthorizeSuccessful() {
+</span><span class='line'>  var token = Trello.token();
+</span><span class='line'>  window.location.replace(&quot;/auth?token=&quot; + token);
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'><span class="nt">%a</span><span class="p">{</span><span class="ss">href</span><span class="p">:</span> <span class="s2">&quot;javascript:void(0)&quot;</span><span class="p">,</span> <span class="ss">onClick</span><span class="p">:</span> <span class="s2">&quot;AuthenticateTrello()&quot;</span><span class="p">}</span>
+</span><span class='line'>  Connect With Trello
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>When the user clicks the link, we have Trello set to activate a &ldquo;popup&rdquo; that will ask them to &ldquo;Allow&rdquo; or &ldquo;Deny&rdquo; our app from accessing their data. When the user allows us access, the popup closes and we hit the &ldquo;onAuthorizeSuccessful&rdquo; method. In my method, I simply redirect them to the <code>/auth</code> route with <code>token</code> manually added to the params list. One of the interesting options listed above is the &ldquo;persist&rdquo; option, which tells Trello whether it should prompt the user for his or her token every time. By telling Trello to persist, the user will only be presented with the popup when he or she needs to reauthenticate.</p>
+
+<p>You can learn more about member tokens from <a href="//trello.com/docs/gettingstarted/authorize.html">https://trello.com/docs/gettingstarted/authorize.html</a>.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Larry Price</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-03T14:53:54-05:00" pubdate data-updated="true"></time>
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.ollertapp.com/blog/2014/12/03/larry-price-connecting-to-the-trello-api/" data-via="OllertApp" data-counturl="http://blog.ollertapp.com/blog/2014/12/03/larry-price-connecting-to-the-trello-api/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/12/03/larry-price-sep-startup-weekend-ollert/" title="Previous Post: Larry Price: SEP Startup Weekend: Ollert">&laquo; Larry Price: SEP Startup Weekend: Ollert</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/12/03/larry-price-using-the-trello-api-in-ruby/" title="Next Post: Larry Price: Using the Trello API in Ruby">Larry Price: Using the Trello API in Ruby &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <form action="https://www.google.com/search" method="get">
+      <fieldset role="search">
+        <input type="hidden" name="q" value="site:blog.ollertapp.com" />
+        <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+      </fieldset>
+    </form>
+  
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-ollert-6-months-later/">Larry Price: Ollert: 6 Months Later</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-hotfixing-a-bug-in-trellos-client-dot-js/">Larry Price: Hotfixing a Bug in Trello&#8217;s client.js</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-testing-through-a-trello-connection-with-capybara-and-webkit/">Larry Price: Testing through a Trello Connection with Capybara and Webkit</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-ollert-reveal-the-data-behind-your-trello-boards/">Larry Price: Ollert: Reveal the Data Behind Your Trello Boards</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-testing-automated-emails-with-email-spec-in-cucumber/">Larry Price: Testing Automated Emails with email-spec in Cucumber</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-deauthorizing-token-with-the-trello-client/">Larry Price: Deauthorizing Token with the Trello Client</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-lessons-learned-during-the-conception-of-ollert/">Larry Price: Lessons Learned During the Conception of Ollert</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-using-sqlite-with-heroku/">Larry Price: Using Sqlite with Heroku</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-sticky-footer-with-twitter-bootstrap/">Larry Price: Sticky Footer with Twitter Bootstrap</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-using-the-trello-api-in-ruby/">Larry Price: Using the Trello API in Ruby</a>
+      </li>
+    
+  </ul>
+</section>
+
+  
+</aside>
+
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Larry Price -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+<script type="text/javascript">
+  if (window.location.href.indexOf('blog.ollertapp.com') === -1 && window.location.href.indexOf('localhost:') === -1) {
+    window.location.href = 'http://blog.ollertapp.com/blog/2014/12/03/larry-price-connecting-to-the-trello-api/';
+  }
+</script>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+<script src="/javascripts/aharris.js"></script>
+
+</body>
+</html>

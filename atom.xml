@@ -3,7 +3,7 @@
   <title><![CDATA[Ollert Diary]]></title>
   <link href="http://blog.ollertapp.com/atom.xml" rel="self"/>
   <link href="http://blog.ollertapp.com/"/>
-  <updated>2014-12-03T12:47:56-05:00</updated>
+  <updated>2014-12-03T15:29:29-05:00</updated>
   <id>http://blog.ollertapp.com/</id>
   <author>
     <name><![CDATA[Larry Price]]></name>
@@ -11,5 +11,1087 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Larry Price: Ollert: 6 Months Later]]></title>
+    <link href="http://blog.ollertapp.com/blog/2014/12/03/larry-price-ollert-6-months-later/"/>
+    <updated>2014-12-03T14:56:43-05:00</updated>
+    <id>http://blog.ollertapp.com/blog/2014/12/03/larry-price-ollert-6-months-later</id>
+    <content type="html"><![CDATA[<p><em>Originally posted December 2, 2014, by <a href="http://www.larry-price.com/blog/2014/12/02/ollert-6-months-later/">Larry Price</a>.</em></p>
+
+<p><a href="http://www.larry-price.com/blog/2014/03/17/sep-startup-weekend-ollert">Nine months ago</a> I brought a team of 6 together to build a data analysis tool called <a href="https://ollertapp.com">Ollert</a>. <a href="http://www.larry-price.com/blog/2014/07/13/ollert-reveal-the-data-behind-your-trello-boards">A few months later</a>, I started working with <a href="//sep.com">SEP</a> to find time to make Ollert better. Where do we stand today?</p>
+
+<p>From a traffic perspective, we&rsquo;re doing pretty well. The numbers are increasing steadily over time, as are the number of people who use the application on a near-daily basis. Although we have surpassed our modest initial goals, we would like to build up a larger audience in the coming months.</p>
+
+<p>We&rsquo;ve had about 1800 different users visit the site for a total of over 5000 pageviews. On average, users hit about 2 pages per visit and stay with us for almost 90 seconds at a time. About half of all traffic comes from social media such as Twitter, LinkedIn, and Reddit, but we&rsquo;ve also seen some interesting traffic patterns come out of Trello, <a href="http://www.larry-price.com/">my blog</a>, <a href="//sep.com/labs">SEP Labs</a>, and various other blogs.</p>
+
+<p><a href="//trello.com">Trello</a> reached out to us a few months ago to congratulate us on making such a neat application using their API. They sent us some shirts and stickers for our trouble. It was an extremely satisfying moment.</p>
+
+<p>On the technical side of things, we&rsquo;ve made several changes to the application.</p>
+
+<p>We removed the concept of &ldquo;signing up&rdquo; for Ollert, as it was the greatest cause of confusion on the site. I replaced it with a mechanism that &ldquo;automatically&rdquo; signs a user up when they connect to a Trello account using OAuth. This makes our lives easier because we don&rsquo;t have to store passwords, and the lives of users easier because they don&rsquo;t have to come up with and remember another password.</p>
+
+<p>Every aspect of the site has been made faster. Server requests have been made faster by switching to unicorn and utilizing the &ldquo;workers&rdquo; feature. Trello API call times have been slashed - Board fetch time dropped from 1.8s to .18s, Label chart 17.6s down to .426s, WIP chart 18.2s to .221s, CFD 15s to 1s.</p>
+
+<p>We added two highly-requested charts - the Burn Down and Burn Up. It takes a certain type of Trello board to make these useful, and I&rsquo;m looking forward to finding someone one day who&rsquo;s able to make good use of them.</p>
+
+<p>We also improved the look of all pages (most notably the home page) with some help from SEP&rsquo;s UX team.</p>
+
+<p>Oh, and now it works significantly better on mobile.</p>
+
+<p>What does the future hold for Ollert?</p>
+
+<p>In the short term I&rsquo;m looking to implement a Cycle Time chart and add in a baseline for the Burndown chart. Long-term is a little less clear, but we may have a sizable announcement soon.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Larry Price: Hotfixing a Bug in Trello's client.js]]></title>
+    <link href="http://blog.ollertapp.com/blog/2014/12/03/larry-price-hotfixing-a-bug-in-trellos-client-dot-js/"/>
+    <updated>2014-12-03T14:56:33-05:00</updated>
+    <id>http://blog.ollertapp.com/blog/2014/12/03/larry-price-hotfixing-a-bug-in-trellos-client-dot-js</id>
+    <content type="html"><![CDATA[<p><em>Originally posted August 22, 2014, by <a href="http://www.larry-price.com/blog/2014/08/22/fixing-some-minor-bugs-in-trellos-client-dot-js/">Larry Price</a>.</em></p>
+
+<p>I&rsquo;m a huge fan of <a href="https://trello.com">Trello</a>, and I recently created an app to analyze Trello data called <a href="https://ollertapp.com">Ollert</a>. Ollert makes heavy use of the <a href="http://trello.com/docs">Trello API</a>. I&rsquo;ve written previously about <a href="http://www.larry-price.com/blog/2014/03/18/connecting-to-the-trello-api/">using Trello&rsquo;s client.js to connect to the Trello API</a>.</p>
+
+<p>During some ad-hoc testing of opening/closing the Trello authorization popup, I found that clicking &ldquo;Deny&rdquo; on the popup, reopening it, and then clicking &ldquo;Connect&rdquo; resulted in me not being able to connect. I spent some time looking into workarounds and I even contacted Trello support. After studying <a href="https://trello.com/1/client.coffee">client.coffee</a>, I eventually found the problem: the Trello client keeps around an anonymous object called <code>ready</code> that stores some session data. When a user clicks &lsquo;Deny&rsquo;, this <code>ready</code> object remembers. I was able to fix the Deny/Allow issue by pulling down a local copy of client.js and making an interface change to the module:</p>
+
+<figure class='code'><figcaption><span>client.js</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">clearReady</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">ready</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>From <a href="http://www.larry-price.com/blog/2014/07/07/deauthorizing-token-with-the-trello-client/">another issue I was having</a>, I already call <code>Trello.deauthorize()</code> before my application attempts to contact Trello, so now I also make a call to <code>Trello.clearReady()</code>. My <code>authorize()</code> function looks like this:</p>
+
+<figure class='code'><figcaption><span>trello-controller.js</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">authorize</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">expires</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">Trello</span><span class="p">.</span><span class="nx">deauthorize</span><span class="p">();</span>
+</span><span class='line'>  <span class="nx">Trello</span><span class="p">.</span><span class="nx">clearReady</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">Trello</span><span class="p">.</span><span class="nx">authorize</span><span class="p">({</span>
+</span><span class='line'>    <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;Ollert&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">type</span><span class="o">:</span> <span class="s2">&quot;popup&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">interactive</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">expiration</span><span class="o">:</span> <span class="nx">expires</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">persist</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">success</span><span class="o">:</span> <span class="nx">callback</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">scope</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">read</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">write</span><span class="o">:</span> <span class="kc">true</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Since I&rsquo;ve pulled client.js locally, I&rsquo;m no longer sending my developer token when I load the file. I manually set my key when the page loads, but this could just as easily be done in my <code>authorize</code> method above.</p>
+
+<figure class='code'><figcaption><span>layout.haml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="o">:</span><span class="nx">javascript</span>
+</span><span class='line'>  <span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">Trello</span><span class="p">.</span><span class="nx">setKey</span><span class="p">(</span><span class="s2">&quot;#{ENV[&#39;PUBLIC_KEY&#39;]}&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can find a copy of my modified client.js <a href="https://gist.github.com/larryprice/1e67ddcd53c686fbc1de">in this Gist</a>.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Larry Price: Testing through a Trello Connection with Capybara and Webkit]]></title>
+    <link href="http://blog.ollertapp.com/blog/2014/12/03/larry-price-testing-through-a-trello-connection-with-capybara-and-webkit/"/>
+    <updated>2014-12-03T14:56:18-05:00</updated>
+    <id>http://blog.ollertapp.com/blog/2014/12/03/larry-price-testing-through-a-trello-connection-with-capybara-and-webkit</id>
+    <content type="html"><![CDATA[<p><em>Originally posted August 7, 2014, by <a href="http://www.larry-price.com/blog/2014/08/07/testing-through-the-trello-api-with-capybara-and-webkit/">Larry Price</a>.</em></p>
+
+<p>During the hardening of <a href="https://ollertapp.com">Ollert</a>, a Trello data analysis tool I wrote, I started writing acceptance tests. I quickly ran into an issue where the meat of my application requires opening pop-up window, signing into Trello, and allowing my application access.</p>
+
+<p>I created a test user on Trello with a few varied boards to allow for proper testing. In doing this, I store the user&rsquo;s login information in my .env file. For the most part, I can use the steps provided in <a href="https://gist.github.com/larryprice/546d6c029bb3074bd84c">this common web_steps.rb</a>.</p>
+
+<figure class='code'><figcaption><span>Connecting.feature</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='cucumber'><span class='line'><span class="k">Feature:</span><span class="nf"> Landing</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">Background:</span><span class="nf"></span>
+</span><span class='line'><span class="k">  Given </span><span class="nf">I am on the landing page</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">@javascript</span><span class="nf"></span>
+</span><span class='line'><span class="k">Scenario:</span><span class="nf"> Deny connecting to Trello</span>
+</span><span class='line'><span class="k">  Given </span><span class="nf">I follow &quot;</span><span class="s">Connect to Get Started</span><span class="nf">&quot;</span>
+</span><span class='line'><span class="nf">  </span><span class="k">And </span><span class="nf">I press &quot;</span><span class="s">Deny</span><span class="nf">&quot; on the Trello popup</span>
+</span><span class='line'><span class="nf">  </span><span class="k">Then </span><span class="nf">I should be on the landing page</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">@javascript</span><span class="nf"></span>
+</span><span class='line'><span class="k">Scenario:</span><span class="nf"> Allow connecting to Trello</span>
+</span><span class='line'><span class="k">  Given </span><span class="nf">I follow &quot;</span><span class="s">Connect to Get Started</span><span class="nf">&quot;</span>
+</span><span class='line'><span class="nf">  </span><span class="k">When </span><span class="nf">I authorize with Trello as the test user</span>
+</span><span class='line'><span class="nf">  </span><span class="k">Then </span><span class="nf">I should not see &quot;</span><span class="s">Connecting...</span><span class="nf">&quot;</span>
+</span><span class='line'><span class="nf">  </span><span class="k">And </span><span class="nf">I should not see &quot;</span><span class="s">Redirecting...</span><span class="nf">&quot;</span>
+</span><span class='line'><span class="nf">  </span><span class="k">And </span><span class="nf">I should be on the boards page</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>When the Trello popup appears, we have to specify the window we&rsquo;re going to use. Since I&rsquo;m using <a href="https://github.com/thoughtbot/capybara-webkit">capybara-webkit</a>, I&rsquo;m going to go ahead and do all of my Trello popup activities in one step, which saves me from writing a lot of unnecessary steps.</p>
+
+<figure class='code'><figcaption><span>trello_popup_steps.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">When</span> <span class="sr">/^I press &quot;(.*?)&quot; on the Trello popup$/</span> <span class="k">do</span> <span class="o">|</span><span class="n">button</span><span class="o">|</span>
+</span><span class='line'>  <span class="n">trello_popup</span> <span class="o">=</span> <span class="n">windows</span><span class="o">.</span><span class="n">last</span>
+</span><span class='line'>  <span class="n">page</span><span class="o">.</span><span class="n">within_window</span> <span class="n">trello_popup</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">click_button</span> <span class="n">button</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">When</span> <span class="sr">/^I authorize with Trello as the test user$/</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">trello_popup</span> <span class="o">=</span> <span class="n">windows</span><span class="o">.</span><span class="n">last</span>
+</span><span class='line'>  <span class="n">page</span><span class="o">.</span><span class="n">within_window</span> <span class="n">trello_popup</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">click_link</span> <span class="s2">&quot;Log in&quot;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">fill_in</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;TEST_USER_TRELLO_USERNAME&#39;</span><span class="o">]</span>
+</span><span class='line'>    <span class="n">fill_in</span> <span class="s2">&quot;password&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;TEST_USER_TRELLO_PASSWORD&#39;</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">click_button</span> <span class="s2">&quot;Log In&quot;</span>
+</span><span class='line'>    <span class="n">click_button</span> <span class="s2">&quot;Allow&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Straightforward so far. We grab the window handle and we click links, fill in fields, and press buttons within that window.</p>
+
+<p>Note that I&rsquo;m using capybara-webkit, a headless web driver, to run my Javascript. Although the first test (&ldquo;Deny&rdquo;) will pass, the &ldquo;Allow&rdquo; test fails ambiguously. This is because capybara-webkit is not recognized as a supported browser by the Trello popup.</p>
+
+<p>Anecdotally, I contacted Trello support about this and received the following response:</p>
+
+<blockquote><p>Currently it is not possible to test this with a headless browser as you are looking to do without getting the unsupported browser message.</p></blockquote>
+
+<p>So I guess we should just give up, right? &hellip;Or we could manipulate the headers we send to load the Trello popup such that Trello <em>thinks</em> we are Google Chromium.</p>
+
+<figure class='code'><figcaption><span>trello_popup_steps.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='cucumber'><span class='line'><span class="k">When </span><span class="nf">/^I authorize with Trello as the test user$/ do</span>
+</span><span class='line'><span class="nf">  trello_popup = windows.last</span>
+</span><span class='line'><span class="nf">  page.within_window trello_popup do</span>
+</span><span class='line'><span class="nf">    page.driver.header(</span>
+</span><span class='line'><span class="nf">      &quot;</span><span class="s">User-Agent</span><span class="nf">&quot;,</span>
+</span><span class='line'><span class="nf">      &quot;</span><span class="s">Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/34.0.1847.116 Chrome/34.0.1847.116 Safari/537.36</span><span class="nf">&quot;</span>
+</span><span class='line'><span class="nf">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">    click_link &quot;</span><span class="s">Log in</span><span class="nf">&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">    fill_in &quot;</span><span class="s">user</span><span class="nf">&quot;, with: ENV[&#39;TEST_USER_TRELLO_USERNAME&#39;]</span>
+</span><span class='line'><span class="nf">    fill_in &quot;</span><span class="s">password</span><span class="nf">&quot;, with: ENV[&#39;TEST_USER_TRELLO_PASSWORD&#39;]</span>
+</span><span class='line'><span class="nf">    </span>
+</span><span class='line'><span class="nf">    click_button &quot;</span><span class="s">Log In</span><span class="nf">&quot;</span>
+</span><span class='line'><span class="nf">    click_button &quot;</span><span class="s">Allow</span><span class="nf">&quot;</span>
+</span><span class='line'><span class="nf">  end</span>
+</span><span class='line'><span class="nf">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Fantastic. Now my tests pass. I can&rsquo;t sleep at night, but my tests pass.</p>
+
+<p>Unfortunately, that won&rsquo;t be the case if I add more tests to this <code>.feature</code> file. Hidden somewhere deep in the browser&rsquo;s cache or cookies or somethings, Trello is remembering that we logged in sometimes. Sometimes it even remembers that someone else has logged in. The UI of the Trello popup changes based on whether it thinks you&rsquo;ve already logged in. In order to keep things consistent, I like to add an if-statement to take care of this case.</p>
+
+<figure class='code'><figcaption><span>trello_popup_steps.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='cucumber'><span class='line'><span class="k">When </span><span class="nf">/^I authorize with Trello as the test user$/ do</span>
+</span><span class='line'><span class="nf">  trello_popup = windows.last</span>
+</span><span class='line'><span class="nf">  page.within_window trello_popup do</span>
+</span><span class='line'><span class="nf">    page.driver.header(</span>
+</span><span class='line'><span class="nf">      &quot;</span><span class="s">User-Agent</span><span class="nf">&quot;,</span>
+</span><span class='line'><span class="nf">      &quot;</span><span class="s">Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/34.0.1847.116 Chrome/34.0.1847.116 Safari/537.36</span><span class="nf">&quot;</span>
+</span><span class='line'><span class="nf">    )</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">    if page.has_content? &quot;</span><span class="s">Switch Accounts</span><span class="nf">&quot;</span>
+</span><span class='line'><span class="nf">      click_link &quot;</span><span class="s">Switch Accounts</span><span class="nf">&quot;</span>
+</span><span class='line'><span class="nf">    else</span>
+</span><span class='line'><span class="nf">      click_link &quot;</span><span class="s">Log in</span><span class="nf">&quot;</span>
+</span><span class='line'><span class="nf">    end</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">    fill_in &quot;</span><span class="s">user</span><span class="nf">&quot;, with: ENV[&#39;TEST_USER_TRELLO_USERNAME&#39;]</span>
+</span><span class='line'><span class="nf">    fill_in &quot;</span><span class="s">password</span><span class="nf">&quot;, with: ENV[&#39;TEST_USER_TRELLO_PASSWORD&#39;]</span>
+</span><span class='line'><span class="nf">    </span>
+</span><span class='line'><span class="nf">    click_button &quot;</span><span class="s">Log In</span><span class="nf">&quot;</span>
+</span><span class='line'><span class="nf">    click_button &quot;</span><span class="s">Allow</span><span class="nf">&quot;</span>
+</span><span class='line'><span class="nf">  end</span>
+</span><span class='line'><span class="nf">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Edge cases addressed. Now I can make connections to Trello and test my application. Be warned, I&rsquo;ve already had these tests break once when Trello updated the UI behind the Trello popup. If Trello ever stops supporting Chromium 34.0, these tests are also likely to stop working. These tests are most useful during development, when we have the potential to break the Trello connection ourselves, and so I think they are well worth the pain of potential future maintenance.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Larry Price: Ollert: Reveal the Data Behind Your Trello Boards]]></title>
+    <link href="http://blog.ollertapp.com/blog/2014/12/03/larry-price-ollert-reveal-the-data-behind-your-trello-boards/"/>
+    <updated>2014-12-03T14:55:50-05:00</updated>
+    <id>http://blog.ollertapp.com/blog/2014/12/03/larry-price-ollert-reveal-the-data-behind-your-trello-boards</id>
+    <content type="html"><![CDATA[<p><em>Originally posted July 13, 2014, by <a href="http://www.larry-price.com/blog/2014/07/13/ollert-reveal-the-data-behind-your-trello-boards/">Larry Price</a>.</em></p>
+
+<p>Introducing <a href="https://ollertapp.com">Ollert</a>, a tool to show you what your <a href="//trello.com">Trello</a> boards can&rsquo;t tell you on their own.</p>
+
+<p>Trello does a great job of telling you about the here and now of your Trello boards; who&rsquo;s working on what task and what is the current state of a task. But what if I want to know about the state of the whole project? How many work items have we finished in the past sprint, iteration, or duration of the project? He who does not understand the past is destined to repeat his mistakes ad nauseum.</p>
+
+<p>Ollert is a tool with these ideas in mind. Authorize Ollert access to your Trello account, select the board you would like to learn more about, and see all the battle scars your board has experienced throughout the duration of the project.</p>
+
+<p>Learn about your velocity through a Cumulative Flow Diagram. View your work in progress with a WIP chart. See which labels your team uses most frequently with our label chart. See information about your cards and lists from a historical perspective.</p>
+
+<p><a href="https://ollertapp.com/signup">Create an account</a> with Ollert to show your support. Users who sign up for an Ollert account will have their Trello authorization saved, saving the hassle of authorizing with Trello every time the user visits the site. An Ollert account is perfect for any user who views board progress frequently, or for creating a continuous display on an office monitor.</p>
+
+<p>Since Ollert&rsquo;s initial release <a href="http://www.larry-price.com/blog/2014/03/17/sep-startup-weekend-ollert/">several months ago</a>, Ollert now boasts over 4000% faster load times, increased data security using SSL and encrypted cookies, and a more consistent Trello connection experience in all modern web browsers.</p>
+
+<p>Discover Ollert now at <a href="https://ollertapp.com">ollertapp.com</a>.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Larry Price: Testing Automated Emails with email-spec in Cucumber]]></title>
+    <link href="http://blog.ollertapp.com/blog/2014/12/03/larry-price-testing-automated-emails-with-email-spec-in-cucumber/"/>
+    <updated>2014-12-03T14:55:30-05:00</updated>
+    <id>http://blog.ollertapp.com/blog/2014/12/03/larry-price-testing-automated-emails-with-email-spec-in-cucumber</id>
+    <content type="html"><![CDATA[<p><em>Originally posted July 12, 2014, by <a href="http://www.larry-price.com/blog/2014/07/12/testing-automated-emails-with-email-spec-in-cucumber/">Larry Price</a>.</em></p>
+
+<p>Now that <a href="http://www.larry-price.com/blog/2014/07/07/deauthorizing-token-with-the-trello-client/">I send emails using Pony</a>, I want to be able to verify that the emails are being generated correctly. I also don&rsquo;t want to send real emails and have my tests check an inbox somewhere. I found a couple of solutions to do this, including <a href="https://github.com/johnmendonca/pony-test">pony-test</a> and <a href="https://github.com/bmabey/email-spec">email-spec</a>. Although pony-test fits my needs perfectly, the last commit was December 27, 2011 (2.5 years ago at the time of this post), and thus was using an outdated version of <a href="https://github.com/jnicklas/capybara">capybara</a> which I was unwilling to use. Fortunately, pony-spec is mostly just a fork of email-spec with all the non-Pony components ripped out.</p>
+
+<p>I&rsquo;m going to be using Cucumber to test my emails, but email-spec also boasts compatibility with rspec and Turnip. To get started:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>gem install email-spec
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The developers of email-spec were kind enough to give us some free step definitions. If I was using rails, I could just type <code>rails generate email_spec:steps</code>, but since I&rsquo;m using Sinatra I opted just to copy-paste the file into my <code>step_definitions/</code> directory. You can find <code>email_steps.rb</code> <a href="https://raw.githubusercontent.com/bmabey/email-spec/master/lib/generators/email_spec/steps/templates/email_steps.rb">on Github</a>.</p>
+
+<p>In <a href="http://www.larry-price.com/blog/2014/07/07/deauthorizing-token-with-the-trello-client/">my last post about small horses and emails</a>, I used the following code to send a confirmation email on signup:</p>
+
+<figure class='code'><figcaption><span>web.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># ...</span>
+</span><span class='line'><span class="n">post</span> <span class="s1">&#39;/signup&#39;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">create!</span> <span class="n">params</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">request</span><span class="o">.</span><span class="n">base_url</span><span class="si">}</span><span class="s2">/account/reset/</span><span class="si">#{</span><span class="n">user</span><span class="o">.</span><span class="n">generate_verification_hash</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="no">Pony</span><span class="o">.</span><span class="n">mail</span><span class="p">(</span>
+</span><span class='line'>    <span class="ss">to</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">email</span><span class="p">,</span>
+</span><span class='line'>    <span class="ss">from</span><span class="p">:</span> <span class="s2">&quot;MyApp Help Desk &lt;noreply@myapp.com&gt;&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="ss">subject</span><span class="p">:</span> <span class="s2">&quot;MyApp Account Verification&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="ss">body</span><span class="p">:</span> <span class="s2">&quot;A request has been made to verify your MyApp account (https://myapp.com).&quot;</span> <span class="o">+</span>
+</span><span class='line'>          <span class="s2">&quot;If you made this request, go to &quot;</span> <span class="o">+</span> <span class="n">url</span> <span class="o">+</span> <span class="s2">&quot;. If you did not make this request, ignore this email.&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="ss">html_body</span><span class="p">:</span> <span class="n">haml</span><span class="p">(</span>
+</span><span class='line'>      <span class="ss">:verify_account_email</span><span class="p">,</span>
+</span><span class='line'>      <span class="ss">layout</span><span class="p">:</span> <span class="kp">false</span><span class="p">,</span>
+</span><span class='line'>      <span class="ss">locals</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="ss">email</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">email</span><span class="p">,</span>
+</span><span class='line'>        <span class="ss">date</span><span class="p">:</span> <span class="no">DateTime</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M:%S%P %B %d, %Y&quot;</span><span class="p">),</span>
+</span><span class='line'>        <span class="ss">ip</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">ip</span><span class="p">,</span>
+</span><span class='line'>        <span class="ss">url</span><span class="p">:</span> <span class="n">url</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>    <span class="p">)</span>
+</span><span class='line'>  <span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="c1"># ...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>/views/verify_account_email.haml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='haml'><span class='line'><span class="nt">%p</span>
+</span><span class='line'>  Hello!
+</span><span class='line'><span class="nt">%p</span>
+</span><span class='line'>  An account verification has been requested for your new &lt;a href=&quot;https://myapp.com&quot;&gt;MyApp&lt;/a&gt; account.
+</span><span class='line'>
+</span><span class='line'><span class="nt">%ul</span>
+</span><span class='line'>  <span class="nt">%li</span>
+</span><span class='line'>    Username: <span class="si">#{</span><span class="n">locals</span><span class="o">[</span><span class="ss">:email</span><span class="o">]</span><span class="si">}</span>
+</span><span class='line'>  <span class="nt">%li</span>
+</span><span class='line'>    Time: <span class="si">#{</span><span class="n">locals</span><span class="o">[</span><span class="ss">:date</span><span class="o">]</span><span class="si">}</span>
+</span><span class='line'>  <span class="nt">%li</span>
+</span><span class='line'>    IP address: <span class="si">#{</span><span class="n">locals</span><span class="o">[</span><span class="ss">:ip</span><span class="o">]</span><span class="si">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">%p</span>
+</span><span class='line'>  If you made this request, click the link below or copy-paste the following URL into your browser to verify your account:
+</span><span class='line'>
+</span><span class='line'><span class="nt">%p</span>
+</span><span class='line'>  <span class="nt">%a</span><span class="p">{</span><span class="ss">href</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">locals</span><span class="o">[</span><span class="ss">:url</span><span class="o">]</span><span class="si">}</span>&quot;, alt: &quot;Verify&quot;, title: &quot;Click to verify account&quot;}
+</span><span class='line'>    <span class="si">#{</span><span class="n">locals</span><span class="o">[</span><span class="ss">:url</span><span class="o">]</span><span class="si">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">%p</span>
+</span><span class='line'>  If you did not request this new account, please ignore this email.
+</span><span class='line'>
+</span><span class='line'><span class="nt">%p</span>
+</span><span class='line'>  Sincerely,
+</span><span class='line'>  <span class="nt">%br</span>
+</span><span class='line'>  Team MyApp
+</span><span class='line'>
+</span><span class='line'><span class="nt">%p</span>
+</span><span class='line'>  This email account is not monitored and will not receive replies. For more information, contact &lt;a href=&quot;mailto:connect@myapp.com&quot;&gt;connect@myapp.com&lt;/a&gt;.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Given the pre-defined steps from email-spec, testing that this email gets sent is a breeze. Adding a scenario to my feature file:</p>
+
+<figure class='code'><figcaption><span>features/SignupConfirmation.feature</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='cucumber'><span class='line'><span class="k">Feature:</span><span class="nf"> Signup Confirmation</span>
+</span><span class='line'><span class="nf">  As a new user</span>
+</span><span class='line'><span class="nf">  When I sign up</span>
+</span><span class='line'><span class="nf">  I should receive a confirmation email</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">Background:</span><span class="nf"></span>
+</span><span class='line'><span class="k">  Given </span><span class="nf">a clear email queue</span>
+</span><span class='line'><span class="nf">  </span><span class="k">When </span><span class="nf">I go to the signup page</span>
+</span><span class='line'><span class="nf">  </span><span class="k">And </span><span class="nf">I fill in &quot;</span><span class="s">email</span><span class="nf">&quot; with &quot;</span><span class="s">prez@whitehouse.gov</span><span class="nf">&quot;</span>
+</span><span class='line'><span class="nf">  </span><span class="k">And </span><span class="nf">I fill in &quot;</span><span class="s">password</span><span class="nf">&quot; with &quot;</span><span class="s">bunnies</span><span class="nf">&quot;</span>
+</span><span class='line'><span class="nf">  </span><span class="k">And </span><span class="nf">I press &quot;</span><span class="s">Sign Up</span><span class="nf">&quot;</span>
+</span><span class='line'><span class="nf">  </span><span class="k">Then </span><span class="nf">&quot;</span><span class="s">prez@whitehouse.gov</span><span class="nf">&quot; should receive an email</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">Scenario:</span><span class="nf"> Receives email with correct contents</span>
+</span><span class='line'><span class="k">  When </span><span class="nf">&quot;</span><span class="s">prez@whitehouse.gov</span><span class="nf">&quot; opens the email</span>
+</span><span class='line'><span class="nf">  </span><span class="k">Then </span><span class="nf">they should see the email delivered from &quot;</span><span class="s">MyApp Help Desk </span><span class="nv">&lt;noreply@myapp.com&gt;</span><span class="nf">&quot;</span>
+</span><span class='line'><span class="nf">  </span><span class="k">And </span><span class="nf">they should see &quot;</span><span class="s">MyApp Account Verification</span><span class="nf">&quot; in the email subject</span>
+</span><span class='line'><span class="nf">  </span><span class="k">And </span><span class="nf">they should see &quot;</span><span class="s">Username: prez@whitehouse.gov</span><span class="nf">&quot; in the email body</span>
+</span><span class='line'><span class="nf">  </span><span class="k">And </span><span class="nf">they should see &quot;</span><span class="s">An account verification has been requested</span><span class="nf">&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&rsquo;s it. Now we know that an email like the one above will be sent during signup. What we can&rsquo;t test here is that our SMTP server (or equivalent) is working, so in reality I&rsquo;m only testing that the email will attempt to send that looks like the one I test against.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Larry Price: Deauthorizing Token with the Trello Client]]></title>
+    <link href="http://blog.ollertapp.com/blog/2014/12/03/larry-price-deauthorizing-token-with-the-trello-client/"/>
+    <updated>2014-12-03T14:55:06-05:00</updated>
+    <id>http://blog.ollertapp.com/blog/2014/12/03/larry-price-deauthorizing-token-with-the-trello-client</id>
+    <content type="html"><![CDATA[<p><em>Originally posted June 7, 2014, by <a href="http://www.larry-price.com/blog/2014/07/07/deauthorizing-token-with-the-trello-client/">Larry Price</a>.</em></p>
+
+<p>In my <a href="https://ollertapp.com">application</a>, a user can connect to Trello without logging in. Whenever this &ldquo;anonymous&rdquo; user hits the landing page, I attempt to force the <a href="https://trello.com/docs/gettingstarted/clientjs.html">Trello client</a> to authorize the user again. By doing this, the user can return to the landing page whenever he or she likes to switch usernames. My authorize code looks like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">AuthenticateTrelloAlways</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">Trello</span><span class="p">.</span><span class="nx">authorize</span><span class="p">({</span>
+</span><span class='line'>    <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;Ollert&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">type</span><span class="o">:</span> <span class="s2">&quot;popup&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">interactive</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">expiration</span><span class="o">:</span> <span class="s2">&quot;1hour&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">persist</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">success</span><span class="o">:</span> <span class="nx">onAuthorizeSuccessful</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">scope</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">read</span><span class="o">:</span> <span class="kc">true</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This works oh-so-wonderfully in Chrome and Firefox, but, even during the hackathon which spawned <a href="https://ollertapp.com">Ollert</a>, we noticed that IE10/11 were causing some unexpected issues. Authorization would work the first time the user hit the landing page, but on subsequent visits telling Trello to Allow or Deny access resulted in the popup showing a white screen and never calling my callback function. Closing and reopening IE would allow me to authorize once, presumably until the &ldquo;1hour&rdquo; that I requested the original token for expired. I also verified this problem existed in IE9.</p>
+
+<p>After several hours tweeting obscenities about IE, I stumbled upon the answer while browsing the source code for Trello&rsquo;s <a href="https://trello.com/1/client.coffee">client.coffee</a>. About one third of the way through the code, I found this function:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="err">#</span> <span class="nx">Clear</span> <span class="nx">any</span> <span class="nx">existing</span> <span class="nx">authorization</span>
+</span><span class='line'><span class="nx">deauthorize</span><span class="o">:</span> <span class="o">-&gt;</span>
+</span><span class='line'>  <span class="nx">token</span> <span class="o">=</span> <span class="kc">null</span>
+</span><span class='line'>  <span class="nx">writeStorage</span><span class="p">(</span><span class="s2">&quot;token&quot;</span><span class="p">,</span> <span class="nx">token</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">return</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>All this code does is unset the class variable <code>token</code> and unset the local store variable of the same name. So I changed my <code>AuthenticateTrelloAlways()</code> method:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">AuthenticateTrelloAlways</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">Trello</span><span class="p">.</span><span class="nx">deauthorize</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">Trello</span><span class="p">.</span><span class="nx">authorize</span><span class="p">({</span>
+</span><span class='line'>    <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;Ollert&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">type</span><span class="o">:</span> <span class="s2">&quot;popup&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">interactive</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">expiration</span><span class="o">:</span> <span class="s2">&quot;1hour&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">persist</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">success</span><span class="o">:</span> <span class="nx">onAuthorizeSuccessful</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">scope</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">read</span><span class="o">:</span> <span class="kc">true</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Voilà. Why does this only happen in IE? I was originally going to blame the local store, but, since I was able to reproduce the defect in IE9 (no HTML5), I no longer believe that to be the case. I&rsquo;m currently resigned to chalk it up as IE just being IE.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Larry Price: Lessons Learned During the Conception of Ollert]]></title>
+    <link href="http://blog.ollertapp.com/blog/2014/12/03/larry-price-lessons-learned-during-the-conception-of-ollert/"/>
+    <updated>2014-12-03T14:54:48-05:00</updated>
+    <id>http://blog.ollertapp.com/blog/2014/12/03/larry-price-lessons-learned-during-the-conception-of-ollert</id>
+    <content type="html"><![CDATA[<p><em>Originally posted June 12, 2014, by <a href="http://www.larry-price.com/blog/2014/06/12/lessons-learned-during-the-conception-of-ollert/">Larry Price</a>.</em></p>
+
+<p>During <a href="http://sep.com">SEP&rsquo;s</a> previous <a href="http://sep.com/labs/">startup weekend</a>, I pitched an idea for a <a href="http://trello.com">Trello</a> Analysis Tool called <a href="https://ollertapp.com">Ollert</a>. In less than three days, a team of 6 built a minimal viable product (MVP) and put it live on the internet. In a little over three months, I have slowly guided Ollert through the legal department, obtained a real domain with security, and fixed a few bugs along the way. I&rsquo;ve learned a thing or two about seeing a hackathon project to fruition that I&rsquo;d like to get in writing.</p>
+
+<h3>1. You Can Never Be Too Prepared</h3>
+
+<p>Before Startup Weekend, I spent days refining my idea and coming up with a cute little proof of concept. I even laid out work items for my developers to work on. When I finally discovered a clever name, I thought my preparation was over.</p>
+
+<p>I was wrong.</p>
+
+<p>Although I requested 5 developers to help me build Ollert, my plans only allowed for two developers to work simultaneously. I didn&rsquo;t realize how hard it would be to keep everyone busy all the time, especially my less-experienced engineers.</p>
+
+<p>Although I did proof-of-concept my idea before we started, I failed to proof-of-concept the more dynamic capabilities a multi-user web application needs to provide. This mistake cost another developer and I the first night of the weekend, plus a bit of the next morning.</p>
+
+<p>Don&rsquo;t even get me started about environment setup. Although I run <a href="http://www.ubuntu.com">Ubuntu</a> natively and had all my developer tools ready before we started work Friday night, the rest of my team were users of That Other Operating System. I should have created a virtual machine with everything all set up, burned it to several USB drives, and let my developers set up VirtualBox without my intervention.</p>
+
+<h3>2. Talk to Legal</h3>
+
+<p>Why do I care about legal? Isn&rsquo;t this my responsibility anyway?</p>
+
+<p>As it turns out, putting a startup weekend project live on the internet before the weekend is over is really cool from a team perspective, but terrifying from a legal perspective. With our MVP, I wasn&rsquo;t using SSL to encrypt user data. I didn&rsquo;t consider how Fog Creek would react once they realized our name is their name backwards. I even had the chutzpah to stick my company&rsquo;s logo in my site&rsquo;s footer.</p>
+
+<p>A quick discussion with management will prepare both sides for the &ldquo;grand reveal&rdquo; if the project makes it to launch. Personally, I&rsquo;d like to see some level of legal counsel in the Startup Weekend &ldquo;pre-pitch&rdquo; session to get feedback before implementation.</p>
+
+<h3>3. Listen</h3>
+
+<p>The second day, one of my developers mentioned using endpoints in the application, and I rejected this idea on the basis that it was too complicated. On the dawn of the final day, we realized that we needed to use his approach or the application would be unusable. This required us to do a lot of rework that could have been avoided. I often think about what other ideas might have been suggested by my team that I may have accidentally ignored.</p>
+
+<h3>4. Easy Tasks</h3>
+
+<p>My assumption going into Startup Weekend was that my team would all be familiar enough with the technology to be able to &ldquo;jump right in&rdquo; or follow along with someone who could. This was a bad assumption.</p>
+
+<p>It&rsquo;s easy to find tasks that <em>I</em> can do. It&rsquo;s much more difficult to find tasks that <em>anyone</em> could do. What are the less-involved tasks on your current project that a less-experienced developer could work on until they&rsquo;re ready to tackle something bigger? Can they set up the database, or the tests? Can you find a guide for them to follow to do these things? If not, you&rsquo;ll have people on your team who don&rsquo;t feel involved but desperately want to help.</p>
+
+<h3>5. Start Small</h3>
+
+<p>Ollert is a pretty big idea, especially for a three-day project. I had high hopes of making it even bigger until the dawn of the final day. I wanted to include some sort of payment system to prove that we would be able to charge people when they sign up without actually charging them. This &ldquo;feature&rdquo; of fake payment has no place in a real product, and would have been misleading at best. We had dozens of ideas for statistics and charts to make it into the website that just weren&rsquo;t that useful.</p>
+
+<p>Limiting scope might have allowed us to come up with a more polished MVP; I walked away the final evening wishing I had left out sign up/in in favor of giving the application more sex appeal.</p>
+
+<h3>Conclusion</h3>
+
+<p>Starting a project is hard. It&rsquo;s even more difficult when you have to delegate most of the work to other people. Startup Weekend is a manger and a mortuary, seeing the birth of many ideas and the death of most. I hope to take this experience and make an even better new product next Startup Weekend.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Larry Price: Using Sqlite with Heroku]]></title>
+    <link href="http://blog.ollertapp.com/blog/2014/12/03/larry-price-using-sqlite-with-heroku/"/>
+    <updated>2014-12-03T14:54:34-05:00</updated>
+    <id>http://blog.ollertapp.com/blog/2014/12/03/larry-price-using-sqlite-with-heroku</id>
+    <content type="html"><![CDATA[<p><em>Originally posted March 29, 2014, by <a href="http://www.larry-price.com/blog/2014/03/29/using-sqlite-on-heroku/">Larry Price</a>.</em></p>
+
+<p>Or rather, &ldquo;Not Using sqlite on Heroku.&rdquo;</p>
+
+<p><a href="//heroku.com">Heroku</a> does not support <a href="//sqlite.org">sqlite</a>. That doesn&rsquo;t mean we have to stop using sqlite in development, but it does mean we need to put in some workarounds to support our deployment environment. The rest of this article will use <a href="//ruby-lang.org">ruby</a> and <a href="//sinatrarb.com">Sinatra</a>.</p>
+
+<p>Assuming you have a heroku app deployed and you have sqlite already working locally, this only takes a few steps. First we need to add a SQL database to our heroku app. From the project directory, we&rsquo;ll add the <a href="//addons.heroku.com/heroku-postgresql">heroku-postgresql</a> addon to our app.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>heroku addons:add heroku-postgresql:dev
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>dev</code> piece of this command tells heroku we want the small, free database. This database supports up to 10,000 rows and has a 99.5% uptime. Best of all: it&rsquo;s free. Other options have you pay $9/mo for 10,000,000 rows or $50+ for Unlimited usage. I recommend you start small.</p>
+
+<p>Hopefully you got some success statements after adding heroku-postgresql. They should have included some new environment variables, which are links to your new Postgres database. Record these; we&rsquo;ll use them a little later.</p>
+
+<p>Now we need to set up the back-end to be able to access a Postgres database when necessary. Hopefully you&rsquo;re using a decent abstraction library in your app that can access any SQL database. For ruby, I find <a href="//www.sequel.rubyforge.org/">Sequel</a> to be sufficient.</p>
+
+<p>In our Gemfile, we&rsquo;ve probably already included the sqlite gem for use in our local environment. We can go ahead and move that into a <code>development</code> block, and we need to add the <code>pg</code> gem to either <code>production</code> or the global block.</p>
+
+<figure class='code'><figcaption><span>Gemfile</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">source</span> <span class="s2">&quot;https://rubygems.org&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">ruby</span> <span class="s1">&#39;2.1.0&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;bundler&#39;</span>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;rake&#39;</span>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;sinatra&#39;</span>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;haml&#39;</span>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;sequel&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">group</span> <span class="ss">:production</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">gem</span> <span class="s1">&#39;pg&#39;</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">group</span> <span class="ss">:development</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">gem</span> <span class="s1">&#39;sqlite3&#39;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Heroku sets <code>ENV['RACK_ENV']</code> to &ldquo;production&rdquo; for us, which means that the pg gem should get picked up the next time we deploy. Now we need to tell our app which database to use in which situation.</p>
+
+<p>One of the easiest places to make this decision is in Sinatra&rsquo;s <code>configure</code> block. I keep my local db in an environment variable called <code>LOCAL_DATABASE_URL</code>. This is where you use the environment variable heroku set for you when you set up your Postgres database; mine was called <code>HEROKU_POSTGRESQL_MAROON_URL</code>.</p>
+
+<figure class='code'><figcaption><span>web.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">App</span> <span class="o">&lt;</span> <span class="no">Sinatra</span><span class="o">::</span><span class="no">Base</span>
+</span><span class='line'>  <span class="n">configure</span> <span class="ss">:production</span> <span class="k">do</span>
+</span><span class='line'>    <span class="no">Sequel</span><span class="o">.</span><span class="n">connect</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;HEROKU_POSTGRESQL_MAROON_URL&#39;</span><span class="o">]</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">configure</span> <span class="ss">:development</span> <span class="k">do</span>
+</span><span class='line'>    <span class="no">Sequel</span><span class="o">.</span><span class="n">connect</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;LOCAL_DATABASE_URL&#39;</span><span class="o">]</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This works because the default environment is &ldquo;development.&rdquo; Test locally, and then we can deploy.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git push heroku master
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And enjoy.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Larry Price: Sticky Footer with Twitter Bootstrap]]></title>
+    <link href="http://blog.ollertapp.com/blog/2014/12/03/larry-price-sticky-footer-with-twitter-bootstrap/"/>
+    <updated>2014-12-03T14:54:20-05:00</updated>
+    <id>http://blog.ollertapp.com/blog/2014/12/03/larry-price-sticky-footer-with-twitter-bootstrap</id>
+    <content type="html"><![CDATA[<p><em>Originally posted March 24, 2014, by <a href="http://www.larry-price.com/blog/2014/03/24/sticky-footer-with-twitter-bootstrap/">Larry Price</a>.</em></p>
+
+<p>Sometimes CSS is a total pain.</p>
+
+<p>We encountered a major CSS problem while working on our incredible startup weekend project <a href="//ollert.herokuapp.com">Ollert</a>. We had created a footer that we wanted below all of our content. We threw together some quick HTML and got a footer below all of the main content, and it looked really good when our main content filled up the entire screen.</p>
+
+<p>What about when there was very little data on the screen? Well, then the footer just floated in the middle of the page, staring at us like some kind of psychotic hummingbird, waiting to slice you up when you&rsquo;re not looking. We searched online and found lots of different solutions; None of them worked. The footer just floated there, taunting us; Telling us to cry home to mommy. So we gave up on the prospect for the rest of the afternoon.</p>
+
+<p>A few days after startup weekend, I found the real solution from the good folks at <a href="//getbootstrap.com/2.3.2/examples/sticky-footer.html">Twitter Bootstrap</a> themselves. It&rsquo;s pretty simple, really. Hooray for the internet!</p>
+
+<p>Below is the HTML to create this effect with all the CSS styles embedded. Marked up with plenty of comments.</p>
+
+<figure class='code'><figcaption><span>index.html</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span><span class='line'><span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">&quot;en&quot;</span> <span class="na">style=</span><span class="s">&quot;height: 100%;&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;head&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href=</span><span class="s">&quot;http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/head&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;body</span> <span class="na">style=</span><span class="s">&quot;height: 100%;&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;wrap&quot;</span> <span class="na">style=</span><span class="s">&quot;min-height: 100%; height: auto !important; height: 100%; margin: 0 auto -50px;&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="c">&lt;!-- All your content goes inside wrap. --&gt;</span>
+</span><span class='line'>      <span class="c">&lt;!-- The bottom margin must be negative the footer min-height --&gt;</span>
+</span><span class='line'>      <span class="c">&lt;!-- Footer min-height is set to 50px in this case --&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;container&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;row&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;h1&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            All Your Content
+</span><span class='line'>          <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;row&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>          All your content will go inside the &#39;wrap&#39; div.
+</span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;push&quot;</span> <span class="na">style=</span><span class="s">&quot;min-height: 50px;&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="c">&lt;!-- This push node should be inside wrap and empty --&gt;</span>
+</span><span class='line'>        <span class="c">&lt;!-- Min-height is equal to the min-height of the footer --&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/body&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;footer&quot;</span> <span class="na">style=</span><span class="s">&quot;min-height: 50px;&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="c">&lt;!-- Some sweet footer content --&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;container&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;small&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        Zowee, I&#39;ve got a footer stuck to the bottom!
+</span><span class='line'>      <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Div tag ids such as &ldquo;wrap&rdquo;, &ldquo;push&rdquo;, and &ldquo;footer&rdquo; can be whatever you want. The height of the footer can be adjusted to fit whatever content you want; I found that using <code>min-height</code> instead of <code>height</code> allowed my content to resize appropriately when wrapped. Styles should definitely be moved to a css file.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Larry Price: Using the Trello API in Ruby]]></title>
+    <link href="http://blog.ollertapp.com/blog/2014/12/03/larry-price-using-the-trello-api-in-ruby/"/>
+    <updated>2014-12-03T14:54:06-05:00</updated>
+    <id>http://blog.ollertapp.com/blog/2014/12/03/larry-price-using-the-trello-api-in-ruby</id>
+    <content type="html"><![CDATA[<p><em>Originally posted March 20, 2014, by <a href="http://www.larry-price.com/blog/2014/03/20/using-the-trello-api-in-ruby/">Larry Price</a>.</em></p>
+
+<p>So, you want to gather data using the <a href="//trello.com">Trello</a> API so that you can <a href="//ollert.herokuapp.com">do something cool with it</a>? And you&rsquo;re using <a href="//ruby-lang.org">Ruby</a>? Enter <a href="//github.com/jeremytregunna/ruby-trello">ruby-trello</a>. Install!</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>gem install ruby-trello
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We&rsquo;ll start off easy, and assume that we&rsquo;re writing a personal application where we only need to access data for one user at a time. We start by configuring ruby-trello. I&rsquo;m going to assume that you&rsquo;ve already generated a public key and received a member token and stored them in your environment.</p>
+
+<figure class='code'><figcaption><span>global_config_test.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;trello&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Trello</span><span class="o">.</span><span class="n">configure</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+</span><span class='line'>  <span class="c1"># API key generated by visiting https://trello.com/1/appKey/generate</span>
+</span><span class='line'>  <span class="n">config</span><span class="o">.</span><span class="n">developer_public_key</span> <span class="o">=</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;PUBLIC_KEY&#39;</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># Member token</span>
+</span><span class='line'>  <span class="c1"># larry-price.com/blog/2014/03/18/connecting-to-the-trello-api/</span>
+</span><span class='line'>  <span class="n">config</span><span class="o">.</span><span class="n">member_token</span> <span class="o">=</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;MEMBER_TOKEN&#39;</span><span class="o">]</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This connects me to a specific member as found through <code>ENV['MEMBER_TOKEN']</code>. I previously wrote <a href="http://www.larry-price.com/blog/2014/03/18/connecting-to-the-trello-api/">another post</a> about getting a member token from a user.</p>
+
+<p>For demonstration, I&rsquo;ll find myself, grab my first board, and then display the name, names of lists, members who have worked on the project, and some numbers about each of the cards in the board. This is essentially my proof of concept for a <a href="http://www.larry-price.com/blog/2014/03/17/sep-startup-weekend-ollert/">super-cool web-app I wrote</a> called <a href="//ollert.herokuapp.com">Ollert</a>.</p>
+
+<figure class='code'><figcaption><span>global_config_test.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># find myself</span>
+</span><span class='line'><span class="n">me</span> <span class="o">=</span> <span class="no">Trello</span><span class="o">::</span><span class="no">Member</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;_larryprice&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># find first board</span>
+</span><span class='line'><span class="n">board</span> <span class="o">=</span> <span class="n">me</span><span class="o">.</span><span class="n">boards</span><span class="o">.</span><span class="n">first</span>
+</span><span class='line'><span class="nb">puts</span> <span class="n">board</span><span class="o">.</span><span class="n">name</span>
+</span><span class='line'><span class="nb">puts</span> <span class="s2">&quot;Lists: </span><span class="si">#{</span><span class="n">board</span><span class="o">.</span><span class="n">lists</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span><span class="o">|</span><span class="n">x</span><span class="o">|</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.join(&#39;, &#39;)}&quot;</span>
+</span><span class='line'><span class="nb">puts</span> <span class="s2">&quot;Members: </span><span class="si">#{</span><span class="n">board</span><span class="o">.</span><span class="n">members</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span><span class="o">|</span><span class="n">x</span><span class="o">|</span> <span class="n">x</span><span class="o">.</span><span class="n">full_name</span><span class="si">}</span><span class="s2">.join(&#39;, &#39;)}&quot;</span>
+</span><span class='line'><span class="n">board</span><span class="o">.</span><span class="n">cards</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">card</span><span class="o">|</span>
+</span><span class='line'>      <span class="nb">puts</span> <span class="s2">&quot;- </span><span class="se">\&quot;</span><span class="si">#{</span><span class="n">card</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="nb">puts</span> <span class="s2">&quot;-- Actions: </span><span class="si">#{</span><span class="n">card</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">nil?</span> <span class="p">?</span> <span class="mi">0</span> <span class="p">:</span> <span class="n">card</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="nb">puts</span> <span class="s2">&quot;-- Members: </span><span class="si">#{</span><span class="n">card</span><span class="o">.</span><span class="n">members</span><span class="o">.</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="nb">puts</span> <span class="s2">&quot;-- Labels: </span><span class="si">#{</span><span class="n">card</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Wow, cool! Such data! This is really great for a single user because we only have to make the connection to Trello once (which is not incredibly fast). However, this won&rsquo;t work in a multi-user environment since we configured ruby-trello to use a specific member token. So how do we connect to multiple members at a time? Let&rsquo;s print out the same data we did above for a single user, but using <code>Trello::Client</code> to connect to Trello.</p>
+
+<figure class='code'><figcaption><span>client_test.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;trello&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">me</span> <span class="o">=</span> <span class="no">Trello</span><span class="o">::</span><span class="no">Client</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
+</span><span class='line'>  <span class="ss">:developer_public_key</span> <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;PUBLIC_KEY&#39;</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:member_token</span> <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;MY_MEMBER_TOKEN&#39;</span><span class="o">]</span>
+</span><span class='line'><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">you</span> <span class="o">=</span> <span class="no">Trello</span><span class="o">::</span><span class="no">Client</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
+</span><span class='line'>  <span class="ss">:developer_public_key</span> <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;PUBLIC_KEY&#39;</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:member_token</span> <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;YOUR_MEMBER_TOKEN&#39;</span><span class="o">]</span>
+</span><span class='line'><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span><span class="n">me</span><span class="p">,</span> <span class="n">you</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">user</span><span class="o">|</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="n">user</span><span class="o">.</span><span class="n">fullname</span>
+</span><span class='line'>  <span class="n">board</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">boards</span><span class="o">.</span><span class="n">first</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="n">board</span><span class="o">.</span><span class="n">name</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;Lists: </span><span class="si">#{</span><span class="n">board</span><span class="o">.</span><span class="n">lists</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span><span class="o">|</span><span class="n">x</span><span class="o">|</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.join(&#39;, &#39;)}&quot;</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;Members: </span><span class="si">#{</span><span class="n">board</span><span class="o">.</span><span class="n">members</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span><span class="o">|</span><span class="n">x</span><span class="o">|</span> <span class="n">x</span><span class="o">.</span><span class="n">full_name</span><span class="si">}</span><span class="s2">.join(&#39;, &#39;)}&quot;</span>
+</span><span class='line'>  <span class="n">board</span><span class="o">.</span><span class="n">cards</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">card</span><span class="o">|</span>
+</span><span class='line'>        <span class="nb">puts</span> <span class="s2">&quot;- </span><span class="se">\&quot;</span><span class="si">#{</span><span class="n">card</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2">&quot;</span>
+</span><span class='line'>        <span class="nb">puts</span> <span class="s2">&quot;-- Actions: </span><span class="si">#{</span><span class="n">card</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">nil?</span> <span class="p">?</span> <span class="mi">0</span> <span class="p">:</span> <span class="n">card</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>        <span class="nb">puts</span> <span class="s2">&quot;-- Members: </span><span class="si">#{</span><span class="n">card</span><span class="o">.</span><span class="n">members</span><span class="o">.</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>        <span class="nb">puts</span> <span class="s2">&quot;-- Labels: </span><span class="si">#{</span><span class="n">card</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now, as your friend and teacher, I command you to use this knowledge to go <a href="//ollert.herokuapp.com">do cool stuff</a> with Trello!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Larry Price: Connecting to the Trello API]]></title>
+    <link href="http://blog.ollertapp.com/blog/2014/12/03/larry-price-connecting-to-the-trello-api/"/>
+    <updated>2014-12-03T14:53:54-05:00</updated>
+    <id>http://blog.ollertapp.com/blog/2014/12/03/larry-price-connecting-to-the-trello-api</id>
+    <content type="html"><![CDATA[<p><em>Originally posted March 18, 2014, by <a href="http://www.larry-price.com/blog/2014/03/18/connecting-to-the-trello-api/">Larry Price</a>.</em></p>
+
+<p><a href="//trello.com">Trello</a> has a <a href="//trello.com/docs/">pretty sweet API</a>, which we use extensively in our Trello-analysis app <a href="//ollert.herokuapp.com">Ollert</a>. Initially connecting to the Trello API took us a few hours, so I&rsquo;d like to make a record of how we managed to connect.</p>
+
+<p>Making a connection to Trello requires two hashcodes: an application key and a Trello member token. You can generate and view your application key by visiting <a href="//trello.com/1/appKey/generate">https://trello.com/1/appKey/generate</a>.</p>
+
+<p>The member token is something we need to get from the user. There are two ways to get a user&rsquo;s member token: through fragments and through a <strong>postMessage</strong>. You can also request different levels of access (read, write, read+write), and different expiration periods (such as 1 day, 30 days, or never) for member tokens. For the remainder of this writing, I&rsquo;ll be accessing a read-only member token that never expires.</p>
+
+<p>We didn&rsquo;t have a lot of luck with fragments, but the concept is simple enough. You have the user click a link that probably says &ldquo;Connect With Trello&rdquo; which is similar to:</p>
+
+<p><code>https://trello.com/1/authorize?key=applicationkey&amp;name=applicationname&amp;expiration=never&amp;response_type=token</code></p>
+
+<p>At this point, the user is redirected to Trello and given the opportunity to Allow or Deny your application access. Once allowed, the user sees a static Trello page with their member token in plain text. Somehow you&#8221;re supposed to convey to them that they should copy this token and paste it back to you. This has clear drawbacks in usability.</p>
+
+<p>Using the <strong>postMessage</strong> method of accessing a member token was significantly more fruitful. Trello provides a Javascript file named <a href="https://trello.com/docs/gettingstarted/clientjs.html">client.js</a> that does most of the legwork for you. An example:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='haml'><span class='line'><span class="nt">%script</span><span class="p">{</span><span class="ss">src</span><span class="p">:</span> <span class="s2">&quot;//api.trello.com/1/client.js?key=applicationkey&quot;</span><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>function AuthenticateTrello() {
+</span><span class='line'>  Trello.authorize({
+</span><span class='line'>    name: &quot;YourApplication&quot;,
+</span><span class='line'>    type: &quot;popup&quot;,
+</span><span class='line'>    interactive: true,
+</span><span class='line'>    expiration: &quot;never&quot;,
+</span><span class='line'>    persist: true,
+</span><span class='line'>    success: function () { onAuthorizeSuccessful(); },
+</span><span class='line'>    scope: { write: false, read: true },
+</span><span class='line'>  });
+</span><span class='line'>}
+</span><span class='line'>function onAuthorizeSuccessful() {
+</span><span class='line'>  var token = Trello.token();
+</span><span class='line'>  window.location.replace(&quot;/auth?token=&quot; + token);
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'><span class="nt">%a</span><span class="p">{</span><span class="ss">href</span><span class="p">:</span> <span class="s2">&quot;javascript:void(0)&quot;</span><span class="p">,</span> <span class="ss">onClick</span><span class="p">:</span> <span class="s2">&quot;AuthenticateTrello()&quot;</span><span class="p">}</span>
+</span><span class='line'>  Connect With Trello
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>When the user clicks the link, we have Trello set to activate a &ldquo;popup&rdquo; that will ask them to &ldquo;Allow&rdquo; or &ldquo;Deny&rdquo; our app from accessing their data. When the user allows us access, the popup closes and we hit the &ldquo;onAuthorizeSuccessful&rdquo; method. In my method, I simply redirect them to the <code>/auth</code> route with <code>token</code> manually added to the params list. One of the interesting options listed above is the &ldquo;persist&rdquo; option, which tells Trello whether it should prompt the user for his or her token every time. By telling Trello to persist, the user will only be presented with the popup when he or she needs to reauthenticate.</p>
+
+<p>You can learn more about member tokens from <a href="//trello.com/docs/gettingstarted/authorize.html">https://trello.com/docs/gettingstarted/authorize.html</a>.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Larry Price: SEP Startup Weekend: Ollert]]></title>
+    <link href="http://blog.ollertapp.com/blog/2014/12/03/larry-price-sep-startup-weekend-ollert/"/>
+    <updated>2014-12-03T14:53:45-05:00</updated>
+    <id>http://blog.ollertapp.com/blog/2014/12/03/larry-price-sep-startup-weekend-ollert</id>
+    <content type="html"><![CDATA[<p><em>Originally posted March 17, 2014, by <a href="http://www.larry-price.com/blog/2014/03/17/sep-startup-weekend-ollert/">Larry Price</a>.</em></p>
+
+<p>Last weekend was <a href="//sep.com">SEP</a>&rsquo;s 6th Semi-Annual <a href="//sep.com/labs/startupweekend/">Startup Weekend</a>. For those unfamiliar, software developers pitch ideas Friday evening and developers volunteer their time to come up with a <a href="//en.wikipedia.org/wiki/Minimum_viable_product">minimum viable product</a> in the next 48 hours. Free beer is the only thing that makes such a weekend possible.</p>
+
+<p>I&rsquo;ve been before and participated in other people&rsquo;s projects and it&rsquo;s always a blast. However, this weekend was different: I had an idea to pitch. Although the idea went through many names, the core concept remained the same:</p>
+
+<blockquote><p>To tell Trello users what their boards say about the past and the future through unique visuals.</p></blockquote>
+
+<p><a href="//trello.com">Trello</a> is a collaborative workflow management tool that does a wonderful job of showing you the present. There is currently no way on Trello to see your past history or compare yesterday&rsquo;s weather. This simplicity is part of the beauty of Trello, but also an opportunity.</p>
+
+<p>My idea was to create a web application where a user could quickly and easily connect with Trello and view information he or she had never seen previously. I would offer a trial service requiring no login that would allow access to all this data, given that the user puts up with authenticating with Trello every time he or she visits the site. There would be a free membership, which would allow the user to &ldquo;permanantly&rdquo; connect to Trello. To monetize, I wanted to offer a paid membership, where the user would be given the ability to compare &ldquo;historical&rdquo; Trello data by selecting begin and end dates for the Trello data that is analyzed.</p>
+
+<p><a href="//ollert.herokuapp.com">Ollert</a> is the result of this Startup Weekend idea. A live version of Ollert can be found at <a href="//ollert.herokuapp.com">ollert.herokuapp.com</a>.</p>
+
+<p>I worked on <a href="//ollert.herokuapp.com">Ollert</a> with 5 other great developers, and we got a spectacular amount of work done given that we only spent a single weekend programming. We were able to direct users to connect with Trello, let them select a board, and then generate and display 12 different statistics and analyses. We also implemented Sign Up/Login.</p>
+
+<p>We worked on <a href="//ollert.herokuapp.com">Ollert</a> to the last minute, so not everything got in. We never implemented the paid member feature and we didn&rsquo;t get in all the analytics we wanted. We also had some great ideas come out while we were working on <a href="//ollert.herokuapp.com">Ollert</a> that didn&rsquo;t make it into the application, such as filtering chart types and selecting favorites.</p>
+
+<p>Overall, my teammates and I had a great time and we are confident that we&rsquo;ve created something useful.</p>
+
+<p>My current intention is to do several more blog posts about <a href="//ollert.herokuapp.com">Ollert</a> including Connecting to the Trello API, Using ruby-trello, Using sqlite on Heroku, What I Should Have Had Ready Before Asking People To Work For Me, and The Future of Ollert.</p>
+]]></content>
+  </entry>
   
 </feed>

@@ -1,0 +1,814 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Ollert Diary</title>
+  <meta name="author" content="Larry Price">
+
+  
+  <meta name="description" content="Originally posted June 7, 2014, by Larry Price. In my application, a user can connect to Trello without logging in. Whenever this &ldquo;anonymous& &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.ollertapp.com/posts/2/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Ollert Diary" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,400italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Muli' rel='stylesheet' type='text/css'>
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <img src="/images/ollert-logo.png" />
+  <h1><a href="/">Ollert Diary</a></h1>
+</hgroup>
+
+</header>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/12/03/larry-price-deauthorizing-token-with-the-trello-client/">Larry Price: Deauthorizing Token With the Trello Client</a></h1>
+    
+  </header>
+
+
+  
+    <p class="meta">
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-03T14:55:06-05:00" pubdate data-updated="true"></time>
+      
+    </p>
+  
+  
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/larry-price/'>larry-price</a>, <a class='category' href='/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+  <div class="entry-content"><p><em>Originally posted June 7, 2014, by <a href="http://www.larry-price.com/blog/2014/07/07/deauthorizing-token-with-the-trello-client/">Larry Price</a>.</em></p>
+
+<p>In my <a href="https://ollertapp.com">application</a>, a user can connect to Trello without logging in. Whenever this &ldquo;anonymous&rdquo; user hits the landing page, I attempt to force the <a href="https://trello.com/docs/gettingstarted/clientjs.html">Trello client</a> to authorize the user again. By doing this, the user can return to the landing page whenever he or she likes to switch usernames. My authorize code looks like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">AuthenticateTrelloAlways</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">Trello</span><span class="p">.</span><span class="nx">authorize</span><span class="p">({</span>
+</span><span class='line'>    <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;Ollert&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">type</span><span class="o">:</span> <span class="s2">&quot;popup&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">interactive</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">expiration</span><span class="o">:</span> <span class="s2">&quot;1hour&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">persist</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">success</span><span class="o">:</span> <span class="nx">onAuthorizeSuccessful</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">scope</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">read</span><span class="o">:</span> <span class="kc">true</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This works oh-so-wonderfully in Chrome and Firefox, but, even during the hackathon which spawned <a href="https://ollertapp.com">Ollert</a>, we noticed that IE10/11 were causing some unexpected issues. Authorization would work the first time the user hit the landing page, but on subsequent visits telling Trello to Allow or Deny access resulted in the popup showing a white screen and never calling my callback function. Closing and reopening IE would allow me to authorize once, presumably until the &ldquo;1hour&rdquo; that I requested the original token for expired. I also verified this problem existed in IE9.</p>
+
+<p>After several hours tweeting obscenities about IE, I stumbled upon the answer while browsing the source code for Trello&rsquo;s <a href="https://trello.com/1/client.coffee">client.coffee</a>. About one third of the way through the code, I found this function:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="err">#</span> <span class="nx">Clear</span> <span class="nx">any</span> <span class="nx">existing</span> <span class="nx">authorization</span>
+</span><span class='line'><span class="nx">deauthorize</span><span class="o">:</span> <span class="o">-&gt;</span>
+</span><span class='line'>  <span class="nx">token</span> <span class="o">=</span> <span class="kc">null</span>
+</span><span class='line'>  <span class="nx">writeStorage</span><span class="p">(</span><span class="s2">&quot;token&quot;</span><span class="p">,</span> <span class="nx">token</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">return</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>All this code does is unset the class variable <code>token</code> and unset the local store variable of the same name. So I changed my <code>AuthenticateTrelloAlways()</code> method:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">AuthenticateTrelloAlways</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">Trello</span><span class="p">.</span><span class="nx">deauthorize</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">Trello</span><span class="p">.</span><span class="nx">authorize</span><span class="p">({</span>
+</span><span class='line'>    <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;Ollert&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">type</span><span class="o">:</span> <span class="s2">&quot;popup&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">interactive</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">expiration</span><span class="o">:</span> <span class="s2">&quot;1hour&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">persist</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">success</span><span class="o">:</span> <span class="nx">onAuthorizeSuccessful</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">scope</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">read</span><span class="o">:</span> <span class="kc">true</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Voilà. Why does this only happen in IE? I was originally going to blame the local store, but, since I was able to reproduce the defect in IE9 (no HTML5), I no longer believe that to be the case. I&rsquo;m currently resigned to chalk it up as IE just being IE.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/12/03/larry-price-lessons-learned-during-the-conception-of-ollert/">Larry Price: Lessons Learned During the Conception of Ollert</a></h1>
+    
+  </header>
+
+
+  
+    <p class="meta">
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-03T14:54:48-05:00" pubdate data-updated="true"></time>
+      
+    </p>
+  
+  
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/larry-price/'>larry-price</a>, <a class='category' href='/blog/categories/talk/'>talk</a>
+  
+</span>
+
+
+  <div class="entry-content"><p><em>Originally posted June 12, 2014, by <a href="http://www.larry-price.com/blog/2014/06/12/lessons-learned-during-the-conception-of-ollert/">Larry Price</a>.</em></p>
+
+<p>During <a href="http://sep.com">SEP&rsquo;s</a> previous <a href="http://sep.com/labs/">startup weekend</a>, I pitched an idea for a <a href="http://trello.com">Trello</a> Analysis Tool called <a href="https://ollertapp.com">Ollert</a>. In less than three days, a team of 6 built a minimal viable product (MVP) and put it live on the internet. In a little over three months, I have slowly guided Ollert through the legal department, obtained a real domain with security, and fixed a few bugs along the way. I&rsquo;ve learned a thing or two about seeing a hackathon project to fruition that I&rsquo;d like to get in writing.</p>
+
+<h3>1. You Can Never Be Too Prepared</h3>
+
+<p>Before Startup Weekend, I spent days refining my idea and coming up with a cute little proof of concept. I even laid out work items for my developers to work on. When I finally discovered a clever name, I thought my preparation was over.</p>
+
+<p>I was wrong.</p>
+
+<p>Although I requested 5 developers to help me build Ollert, my plans only allowed for two developers to work simultaneously. I didn&rsquo;t realize how hard it would be to keep everyone busy all the time, especially my less-experienced engineers.</p>
+
+<p>Although I did proof-of-concept my idea before we started, I failed to proof-of-concept the more dynamic capabilities a multi-user web application needs to provide. This mistake cost another developer and I the first night of the weekend, plus a bit of the next morning.</p>
+
+<p>Don&rsquo;t even get me started about environment setup. Although I run <a href="http://www.ubuntu.com">Ubuntu</a> natively and had all my developer tools ready before we started work Friday night, the rest of my team were users of That Other Operating System. I should have created a virtual machine with everything all set up, burned it to several USB drives, and let my developers set up VirtualBox without my intervention.</p>
+
+<h3>2. Talk to Legal</h3>
+
+<p>Why do I care about legal? Isn&rsquo;t this my responsibility anyway?</p>
+
+<p>As it turns out, putting a startup weekend project live on the internet before the weekend is over is really cool from a team perspective, but terrifying from a legal perspective. With our MVP, I wasn&rsquo;t using SSL to encrypt user data. I didn&rsquo;t consider how Fog Creek would react once they realized our name is their name backwards. I even had the chutzpah to stick my company&rsquo;s logo in my site&rsquo;s footer.</p>
+
+<p>A quick discussion with management will prepare both sides for the &ldquo;grand reveal&rdquo; if the project makes it to launch. Personally, I&rsquo;d like to see some level of legal counsel in the Startup Weekend &ldquo;pre-pitch&rdquo; session to get feedback before implementation.</p>
+
+<h3>3. Listen</h3>
+
+<p>The second day, one of my developers mentioned using endpoints in the application, and I rejected this idea on the basis that it was too complicated. On the dawn of the final day, we realized that we needed to use his approach or the application would be unusable. This required us to do a lot of rework that could have been avoided. I often think about what other ideas might have been suggested by my team that I may have accidentally ignored.</p>
+
+<h3>4. Easy Tasks</h3>
+
+<p>My assumption going into Startup Weekend was that my team would all be familiar enough with the technology to be able to &ldquo;jump right in&rdquo; or follow along with someone who could. This was a bad assumption.</p>
+
+<p>It&rsquo;s easy to find tasks that <em>I</em> can do. It&rsquo;s much more difficult to find tasks that <em>anyone</em> could do. What are the less-involved tasks on your current project that a less-experienced developer could work on until they&rsquo;re ready to tackle something bigger? Can they set up the database, or the tests? Can you find a guide for them to follow to do these things? If not, you&rsquo;ll have people on your team who don&rsquo;t feel involved but desperately want to help.</p>
+
+<h3>5. Start Small</h3>
+
+<p>Ollert is a pretty big idea, especially for a three-day project. I had high hopes of making it even bigger until the dawn of the final day. I wanted to include some sort of payment system to prove that we would be able to charge people when they sign up without actually charging them. This &ldquo;feature&rdquo; of fake payment has no place in a real product, and would have been misleading at best. We had dozens of ideas for statistics and charts to make it into the website that just weren&rsquo;t that useful.</p>
+
+<p>Limiting scope might have allowed us to come up with a more polished MVP; I walked away the final evening wishing I had left out sign up/in in favor of giving the application more sex appeal.</p>
+
+<h3>Conclusion</h3>
+
+<p>Starting a project is hard. It&rsquo;s even more difficult when you have to delegate most of the work to other people. Startup Weekend is a manger and a mortuary, seeing the birth of many ideas and the death of most. I hope to take this experience and make an even better new product next Startup Weekend.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/12/03/larry-price-using-sqlite-with-heroku/">Larry Price: Using Sqlite With Heroku</a></h1>
+    
+  </header>
+
+
+  
+    <p class="meta">
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-03T14:54:34-05:00" pubdate data-updated="true"></time>
+      
+    </p>
+  
+  
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/larry-price/'>larry-price</a>, <a class='category' href='/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+  <div class="entry-content"><p><em>Originally posted March 29, 2014, by <a href="http://www.larry-price.com/blog/2014/03/29/using-sqlite-on-heroku/">Larry Price</a>.</em></p>
+
+<p>Or rather, &ldquo;Not Using sqlite on Heroku.&rdquo;</p>
+
+<p><a href="//heroku.com">Heroku</a> does not support <a href="//sqlite.org">sqlite</a>. That doesn&rsquo;t mean we have to stop using sqlite in development, but it does mean we need to put in some workarounds to support our deployment environment. The rest of this article will use <a href="//ruby-lang.org">ruby</a> and <a href="//sinatrarb.com">Sinatra</a>.</p>
+
+<p>Assuming you have a heroku app deployed and you have sqlite already working locally, this only takes a few steps. First we need to add a SQL database to our heroku app. From the project directory, we&rsquo;ll add the <a href="//addons.heroku.com/heroku-postgresql">heroku-postgresql</a> addon to our app.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>heroku addons:add heroku-postgresql:dev
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>dev</code> piece of this command tells heroku we want the small, free database. This database supports up to 10,000 rows and has a 99.5% uptime. Best of all: it&rsquo;s free. Other options have you pay $9/mo for 10,000,000 rows or $50+ for Unlimited usage. I recommend you start small.</p>
+
+<p>Hopefully you got some success statements after adding heroku-postgresql. They should have included some new environment variables, which are links to your new Postgres database. Record these; we&rsquo;ll use them a little later.</p>
+
+<p>Now we need to set up the back-end to be able to access a Postgres database when necessary. Hopefully you&rsquo;re using a decent abstraction library in your app that can access any SQL database. For ruby, I find <a href="//www.sequel.rubyforge.org/">Sequel</a> to be sufficient.</p>
+
+<p>In our Gemfile, we&rsquo;ve probably already included the sqlite gem for use in our local environment. We can go ahead and move that into a <code>development</code> block, and we need to add the <code>pg</code> gem to either <code>production</code> or the global block.</p>
+
+<figure class='code'><figcaption><span>Gemfile</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">source</span> <span class="s2">&quot;https://rubygems.org&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">ruby</span> <span class="s1">&#39;2.1.0&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;bundler&#39;</span>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;rake&#39;</span>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;sinatra&#39;</span>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;haml&#39;</span>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;sequel&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">group</span> <span class="ss">:production</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">gem</span> <span class="s1">&#39;pg&#39;</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">group</span> <span class="ss">:development</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">gem</span> <span class="s1">&#39;sqlite3&#39;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Heroku sets <code>ENV['RACK_ENV']</code> to &ldquo;production&rdquo; for us, which means that the pg gem should get picked up the next time we deploy. Now we need to tell our app which database to use in which situation.</p>
+
+<p>One of the easiest places to make this decision is in Sinatra&rsquo;s <code>configure</code> block. I keep my local db in an environment variable called <code>LOCAL_DATABASE_URL</code>. This is where you use the environment variable heroku set for you when you set up your Postgres database; mine was called <code>HEROKU_POSTGRESQL_MAROON_URL</code>.</p>
+
+<figure class='code'><figcaption><span>web.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">App</span> <span class="o">&lt;</span> <span class="no">Sinatra</span><span class="o">::</span><span class="no">Base</span>
+</span><span class='line'>  <span class="n">configure</span> <span class="ss">:production</span> <span class="k">do</span>
+</span><span class='line'>    <span class="no">Sequel</span><span class="o">.</span><span class="n">connect</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;HEROKU_POSTGRESQL_MAROON_URL&#39;</span><span class="o">]</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">configure</span> <span class="ss">:development</span> <span class="k">do</span>
+</span><span class='line'>    <span class="no">Sequel</span><span class="o">.</span><span class="n">connect</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;LOCAL_DATABASE_URL&#39;</span><span class="o">]</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This works because the default environment is &ldquo;development.&rdquo; Test locally, and then we can deploy.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git push heroku master
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And enjoy.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/12/03/larry-price-sticky-footer-with-twitter-bootstrap/">Larry Price: Sticky Footer With Twitter Bootstrap</a></h1>
+    
+  </header>
+
+
+  
+    <p class="meta">
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-03T14:54:20-05:00" pubdate data-updated="true"></time>
+      
+    </p>
+  
+  
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/larry-price/'>larry-price</a>, <a class='category' href='/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+  <div class="entry-content"><p><em>Originally posted March 24, 2014, by <a href="http://www.larry-price.com/blog/2014/03/24/sticky-footer-with-twitter-bootstrap/">Larry Price</a>.</em></p>
+
+<p>Sometimes CSS is a total pain.</p>
+
+<p>We encountered a major CSS problem while working on our incredible startup weekend project <a href="//ollert.herokuapp.com">Ollert</a>. We had created a footer that we wanted below all of our content. We threw together some quick HTML and got a footer below all of the main content, and it looked really good when our main content filled up the entire screen.</p>
+
+<p>What about when there was very little data on the screen? Well, then the footer just floated in the middle of the page, staring at us like some kind of psychotic hummingbird, waiting to slice you up when you&rsquo;re not looking. We searched online and found lots of different solutions; None of them worked. The footer just floated there, taunting us; Telling us to cry home to mommy. So we gave up on the prospect for the rest of the afternoon.</p>
+
+<p>A few days after startup weekend, I found the real solution from the good folks at <a href="//getbootstrap.com/2.3.2/examples/sticky-footer.html">Twitter Bootstrap</a> themselves. It&rsquo;s pretty simple, really. Hooray for the internet!</p>
+
+<p>Below is the HTML to create this effect with all the CSS styles embedded. Marked up with plenty of comments.</p>
+
+<figure class='code'><figcaption><span>index.html</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span><span class='line'><span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">&quot;en&quot;</span> <span class="na">style=</span><span class="s">&quot;height: 100%;&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;head&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href=</span><span class="s">&quot;http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/head&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;body</span> <span class="na">style=</span><span class="s">&quot;height: 100%;&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;wrap&quot;</span> <span class="na">style=</span><span class="s">&quot;min-height: 100%; height: auto !important; height: 100%; margin: 0 auto -50px;&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="c">&lt;!-- All your content goes inside wrap. --&gt;</span>
+</span><span class='line'>      <span class="c">&lt;!-- The bottom margin must be negative the footer min-height --&gt;</span>
+</span><span class='line'>      <span class="c">&lt;!-- Footer min-height is set to 50px in this case --&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;container&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;row&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;h1&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            All Your Content
+</span><span class='line'>          <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;row&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>          All your content will go inside the &#39;wrap&#39; div.
+</span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;push&quot;</span> <span class="na">style=</span><span class="s">&quot;min-height: 50px;&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="c">&lt;!-- This push node should be inside wrap and empty --&gt;</span>
+</span><span class='line'>        <span class="c">&lt;!-- Min-height is equal to the min-height of the footer --&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/body&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;footer&quot;</span> <span class="na">style=</span><span class="s">&quot;min-height: 50px;&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="c">&lt;!-- Some sweet footer content --&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;container&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;small&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        Zowee, I&#39;ve got a footer stuck to the bottom!
+</span><span class='line'>      <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Div tag ids such as &ldquo;wrap&rdquo;, &ldquo;push&rdquo;, and &ldquo;footer&rdquo; can be whatever you want. The height of the footer can be adjusted to fit whatever content you want; I found that using <code>min-height</code> instead of <code>height</code> allowed my content to resize appropriately when wrapped. Styles should definitely be moved to a css file.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/12/03/larry-price-using-the-trello-api-in-ruby/">Larry Price: Using the Trello API in Ruby</a></h1>
+    
+  </header>
+
+
+  
+    <p class="meta">
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-03T14:54:06-05:00" pubdate data-updated="true"></time>
+      
+    </p>
+  
+  
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/larry-price/'>larry-price</a>, <a class='category' href='/blog/categories/tech/'>tech</a>
+  
+</span>
+
+
+  <div class="entry-content"><p><em>Originally posted March 20, 2014, by <a href="http://www.larry-price.com/blog/2014/03/20/using-the-trello-api-in-ruby/">Larry Price</a>.</em></p>
+
+<p>So, you want to gather data using the <a href="//trello.com">Trello</a> API so that you can <a href="//ollert.herokuapp.com">do something cool with it</a>? And you&rsquo;re using <a href="//ruby-lang.org">Ruby</a>? Enter <a href="//github.com/jeremytregunna/ruby-trello">ruby-trello</a>. Install!</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>gem install ruby-trello
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We&rsquo;ll start off easy, and assume that we&rsquo;re writing a personal application where we only need to access data for one user at a time. We start by configuring ruby-trello. I&rsquo;m going to assume that you&rsquo;ve already generated a public key and received a member token and stored them in your environment.</p>
+
+<figure class='code'><figcaption><span>global_config_test.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;trello&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Trello</span><span class="o">.</span><span class="n">configure</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+</span><span class='line'>  <span class="c1"># API key generated by visiting https://trello.com/1/appKey/generate</span>
+</span><span class='line'>  <span class="n">config</span><span class="o">.</span><span class="n">developer_public_key</span> <span class="o">=</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;PUBLIC_KEY&#39;</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># Member token</span>
+</span><span class='line'>  <span class="c1"># larry-price.com/blog/2014/03/18/connecting-to-the-trello-api/</span>
+</span><span class='line'>  <span class="n">config</span><span class="o">.</span><span class="n">member_token</span> <span class="o">=</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;MEMBER_TOKEN&#39;</span><span class="o">]</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This connects me to a specific member as found through <code>ENV['MEMBER_TOKEN']</code>. I previously wrote <a href="http://www.larry-price.com/blog/2014/03/18/connecting-to-the-trello-api/">another post</a> about getting a member token from a user.</p>
+
+<p>For demonstration, I&rsquo;ll find myself, grab my first board, and then display the name, names of lists, members who have worked on the project, and some numbers about each of the cards in the board. This is essentially my proof of concept for a <a href="http://www.larry-price.com/blog/2014/03/17/sep-startup-weekend-ollert/">super-cool web-app I wrote</a> called <a href="//ollert.herokuapp.com">Ollert</a>.</p>
+
+<figure class='code'><figcaption><span>global_config_test.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># find myself</span>
+</span><span class='line'><span class="n">me</span> <span class="o">=</span> <span class="no">Trello</span><span class="o">::</span><span class="no">Member</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;_larryprice&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># find first board</span>
+</span><span class='line'><span class="n">board</span> <span class="o">=</span> <span class="n">me</span><span class="o">.</span><span class="n">boards</span><span class="o">.</span><span class="n">first</span>
+</span><span class='line'><span class="nb">puts</span> <span class="n">board</span><span class="o">.</span><span class="n">name</span>
+</span><span class='line'><span class="nb">puts</span> <span class="s2">&quot;Lists: </span><span class="si">#{</span><span class="n">board</span><span class="o">.</span><span class="n">lists</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span><span class="o">|</span><span class="n">x</span><span class="o">|</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.join(&#39;, &#39;)}&quot;</span>
+</span><span class='line'><span class="nb">puts</span> <span class="s2">&quot;Members: </span><span class="si">#{</span><span class="n">board</span><span class="o">.</span><span class="n">members</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span><span class="o">|</span><span class="n">x</span><span class="o">|</span> <span class="n">x</span><span class="o">.</span><span class="n">full_name</span><span class="si">}</span><span class="s2">.join(&#39;, &#39;)}&quot;</span>
+</span><span class='line'><span class="n">board</span><span class="o">.</span><span class="n">cards</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">card</span><span class="o">|</span>
+</span><span class='line'>      <span class="nb">puts</span> <span class="s2">&quot;- </span><span class="se">\&quot;</span><span class="si">#{</span><span class="n">card</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="nb">puts</span> <span class="s2">&quot;-- Actions: </span><span class="si">#{</span><span class="n">card</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">nil?</span> <span class="p">?</span> <span class="mi">0</span> <span class="p">:</span> <span class="n">card</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="nb">puts</span> <span class="s2">&quot;-- Members: </span><span class="si">#{</span><span class="n">card</span><span class="o">.</span><span class="n">members</span><span class="o">.</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="nb">puts</span> <span class="s2">&quot;-- Labels: </span><span class="si">#{</span><span class="n">card</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Wow, cool! Such data! This is really great for a single user because we only have to make the connection to Trello once (which is not incredibly fast). However, this won&rsquo;t work in a multi-user environment since we configured ruby-trello to use a specific member token. So how do we connect to multiple members at a time? Let&rsquo;s print out the same data we did above for a single user, but using <code>Trello::Client</code> to connect to Trello.</p>
+
+<figure class='code'><figcaption><span>client_test.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;trello&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">me</span> <span class="o">=</span> <span class="no">Trello</span><span class="o">::</span><span class="no">Client</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
+</span><span class='line'>  <span class="ss">:developer_public_key</span> <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;PUBLIC_KEY&#39;</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:member_token</span> <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;MY_MEMBER_TOKEN&#39;</span><span class="o">]</span>
+</span><span class='line'><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">you</span> <span class="o">=</span> <span class="no">Trello</span><span class="o">::</span><span class="no">Client</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
+</span><span class='line'>  <span class="ss">:developer_public_key</span> <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;PUBLIC_KEY&#39;</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:member_token</span> <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;YOUR_MEMBER_TOKEN&#39;</span><span class="o">]</span>
+</span><span class='line'><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span><span class="n">me</span><span class="p">,</span> <span class="n">you</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">user</span><span class="o">|</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="n">user</span><span class="o">.</span><span class="n">fullname</span>
+</span><span class='line'>  <span class="n">board</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">boards</span><span class="o">.</span><span class="n">first</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="n">board</span><span class="o">.</span><span class="n">name</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;Lists: </span><span class="si">#{</span><span class="n">board</span><span class="o">.</span><span class="n">lists</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span><span class="o">|</span><span class="n">x</span><span class="o">|</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.join(&#39;, &#39;)}&quot;</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;Members: </span><span class="si">#{</span><span class="n">board</span><span class="o">.</span><span class="n">members</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span><span class="o">|</span><span class="n">x</span><span class="o">|</span> <span class="n">x</span><span class="o">.</span><span class="n">full_name</span><span class="si">}</span><span class="s2">.join(&#39;, &#39;)}&quot;</span>
+</span><span class='line'>  <span class="n">board</span><span class="o">.</span><span class="n">cards</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">card</span><span class="o">|</span>
+</span><span class='line'>        <span class="nb">puts</span> <span class="s2">&quot;- </span><span class="se">\&quot;</span><span class="si">#{</span><span class="n">card</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2">&quot;</span>
+</span><span class='line'>        <span class="nb">puts</span> <span class="s2">&quot;-- Actions: </span><span class="si">#{</span><span class="n">card</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">nil?</span> <span class="p">?</span> <span class="mi">0</span> <span class="p">:</span> <span class="n">card</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>        <span class="nb">puts</span> <span class="s2">&quot;-- Members: </span><span class="si">#{</span><span class="n">card</span><span class="o">.</span><span class="n">members</span><span class="o">.</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>        <span class="nb">puts</span> <span class="s2">&quot;-- Labels: </span><span class="si">#{</span><span class="n">card</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now, as your friend and teacher, I command you to use this knowledge to go <a href="//ollert.herokuapp.com">do cool stuff</a> with Trello!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="3">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="1">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <form action="https://www.google.com/search" method="get">
+      <fieldset role="search">
+        <input type="hidden" name="q" value="site:blog.ollertapp.com" />
+        <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+      </fieldset>
+    </form>
+  
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-ollert-6-months-later/">Larry Price: Ollert: 6 Months Later</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-hotfixing-a-bug-in-trellos-client-dot-js/">Larry Price: Hotfixing a Bug in Trello&#8217;s client.js</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-testing-through-a-trello-connection-with-capybara-and-webkit/">Larry Price: Testing through a Trello Connection with Capybara and Webkit</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-ollert-reveal-the-data-behind-your-trello-boards/">Larry Price: Ollert: Reveal the Data Behind Your Trello Boards</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-testing-automated-emails-with-email-spec-in-cucumber/">Larry Price: Testing Automated Emails with email-spec in Cucumber</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-deauthorizing-token-with-the-trello-client/">Larry Price: Deauthorizing Token with the Trello Client</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-lessons-learned-during-the-conception-of-ollert/">Larry Price: Lessons Learned During the Conception of Ollert</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-using-sqlite-with-heroku/">Larry Price: Using Sqlite with Heroku</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-sticky-footer-with-twitter-bootstrap/">Larry Price: Sticky Footer with Twitter Bootstrap</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/03/larry-price-using-the-trello-api-in-ruby/">Larry Price: Using the Trello API in Ruby</a>
+      </li>
+    
+  </ul>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Larry Price -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+<script type="text/javascript">
+  if (window.location.href.indexOf('blog.ollertapp.com') === -1 && window.location.href.indexOf('localhost:') === -1) {
+    window.location.href = 'http://blog.ollertapp.com/posts/2/index.html';
+  }
+</script>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+<script src="/javascripts/aharris.js"></script>
+
+</body>
+</html>

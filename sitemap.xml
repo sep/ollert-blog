@@ -1,14 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://blog.ollertapp.com/blog/2014/12/03/larry-price-ollert-6-months-later/</loc>
+    <lastmod>2014-12-03T14:56:43-05:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://blog.ollertapp.com/blog/2014/12/03/larry-price-hotfixing-a-bug-in-trellos-client-dot-js/</loc>
+    <lastmod>2014-12-03T14:56:33-05:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://blog.ollertapp.com/blog/2014/12/03/larry-price-testing-through-a-trello-connection-with-capybara-and-webkit/</loc>
+    <lastmod>2014-12-03T14:56:18-05:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://blog.ollertapp.com/blog/2014/12/03/larry-price-ollert-reveal-the-data-behind-your-trello-boards/</loc>
+    <lastmod>2014-12-03T14:55:50-05:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://blog.ollertapp.com/blog/2014/12/03/larry-price-testing-automated-emails-with-email-spec-in-cucumber/</loc>
+    <lastmod>2014-12-03T14:55:30-05:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://blog.ollertapp.com/blog/2014/12/03/larry-price-deauthorizing-token-with-the-trello-client/</loc>
+    <lastmod>2014-12-03T14:55:06-05:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://blog.ollertapp.com/blog/2014/12/03/larry-price-lessons-learned-during-the-conception-of-ollert/</loc>
+    <lastmod>2014-12-03T14:54:48-05:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://blog.ollertapp.com/blog/2014/12/03/larry-price-using-sqlite-with-heroku/</loc>
+    <lastmod>2014-12-03T14:54:34-05:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://blog.ollertapp.com/blog/2014/12/03/larry-price-sticky-footer-with-twitter-bootstrap/</loc>
+    <lastmod>2014-12-03T14:54:20-05:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://blog.ollertapp.com/blog/2014/12/03/larry-price-using-the-trello-api-in-ruby/</loc>
+    <lastmod>2014-12-03T14:54:06-05:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://blog.ollertapp.com/blog/2014/12/03/larry-price-connecting-to-the-trello-api/</loc>
+    <lastmod>2014-12-03T14:53:54-05:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://blog.ollertapp.com/blog/2014/12/03/larry-price-sep-startup-weekend-ollert/</loc>
+    <lastmod>2014-12-03T14:53:45-05:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>http://blog.ollertapp.com/blog/archives/</loc>
-    <lastmod>2014-12-03T12:47:56-05:00</lastmod>
+    <lastmod>2014-12-03T15:29:29-05:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>http://blog.ollertapp.com/</loc>
-    <lastmod>2014-12-03T12:47:56-05:00</lastmod>
+    <lastmod>2014-12-03T15:29:29-05:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
