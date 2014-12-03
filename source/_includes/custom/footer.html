@@ -4,7 +4,7 @@
 </p>
 
 <script type="text/javascript">
-  if (window.location.href.indexOf('blog.ollertapp.com') === 0 && window.location.href.indexOf('localhost:') === 0) {
+  if (window.location.href.indexOf('blog.ollertapp.com') === -1 && window.location.href.indexOf('localhost:') === -1) {
     window.location.href = 'http://blog.ollertapp.com{{ page.url }}';
   }
 </script>
