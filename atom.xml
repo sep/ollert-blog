@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title><![CDATA[Ollert Diary]]></title>
-  <link href="http://yoursite.com/atom.xml" rel="self"/>
-  <link href="http://yoursite.com/"/>
-  <updated>2014-12-03T12:14:21-05:00</updated>
-  <id>http://yoursite.com/</id>
+  <link href="http://blog.ollertapp.com/atom.xml" rel="self"/>
+  <link href="http://blog.ollertapp.com/"/>
+  <updated>2014-12-03T12:33:08-05:00</updated>
+  <id>http://blog.ollertapp.com/</id>
   <author>
     <name><![CDATA[Larry Price]]></name>
-    
+    <email><![CDATA[larry@ollertapp.com]]></email>
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
