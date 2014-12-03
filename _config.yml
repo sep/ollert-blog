@@ -2,7 +2,7 @@
 #      Main Configs       #
 # ----------------------- #
 
-url: http://yoursite.com
+url: http://blog.ollertapp.com
 title: Ollert Diary
 subtitle: Collecting Trello data and using it for the greater good.
 author: Larry Price
@@ -19,7 +19,7 @@ date_format: "ordinal"
 subscribe_rss: /atom.xml
 subscribe_email:
 # RSS feeds can list your email address if you like
-email:
+email: larry@ollertapp.com
 
 # ----------------------- #
 #    Jekyll & Plugins     #
