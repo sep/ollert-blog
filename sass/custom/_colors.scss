@@ -45,10 +45,13 @@
 // #E74C3C
 
 $ollert-orange: #E74C3C;
+$dark-orange: #D13221;
 
 .toggle-sidebar:after {
   background: $ollert-orange !important;
   color: white;
+  border-right: 1px solid $dark-orange !important;
+  border-bottom: 1px solid $dark-orange !important;
 }
 
 html {
